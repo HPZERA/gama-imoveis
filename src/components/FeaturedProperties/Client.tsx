@@ -120,13 +120,13 @@ function PropertyCard({ property, delay, priority }: { property: DbProperty; del
           {property.bedrooms ? (
             <span className="flex items-center gap-1.5">
               <BedDouble size={14} className="text-brand" />
-              {property.bedrooms}
+              {property.bedrooms} quarto{property.bedrooms > 1 ? "s" : ""}
             </span>
           ) : null}
           {property.bathrooms ? (
             <span className="flex items-center gap-1.5">
               <Bath size={14} className="text-brand" />
-              {property.bathrooms}
+              {property.bathrooms} banheiro{property.bathrooms > 1 ? "s" : ""}
             </span>
           ) : null}
         </div>
