@@ -4,13 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search, MapPin, DollarSign, Home, ChevronDown } from "lucide-react";
-import { saleTypes, rentTypes, salePrices, rentPrices } from "@/lib/searchOptions";
+import { saleTypes, rentTypes, salePrices, rentPrices, locations } from "@/lib/searchOptions";
 
 export default function Hero() {
   const router = useRouter();
   const [transactionType, setTransactionType] = useState<"comprar" | "alugar">("comprar");
   const [propertyType, setPropertyType] = useState(saleTypes[0]);
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(locations[0]);
   const [priceRange, setPriceRange] = useState("Qualquer valor");
 
   const priceRanges = transactionType === "comprar" ? salePrices : rentPrices;
@@ -26,7 +26,7 @@ export default function Hero() {
     const params = new URLSearchParams();
     params.set("tipo", transactionType === "comprar" ? "venda" : "aluguel");
     if (propertyType !== "Todos os tipos") params.set("categoria", propertyType);
-    if (location.trim()) params.set("busca", location.trim());
+    if (location !== locations[0]) params.set("busca", location);
     const selectedPrice = priceRanges.find((p) => p.label === priceRange);
     if (selectedPrice?.max != null) params.set("precoMax", String(selectedPrice.max));
     router.push(`/imoveis?${params.toString()}`);
@@ -150,13 +150,21 @@ export default function Hero() {
                 <label className="block text-[10px] font-semibold text-gray-text uppercase tracking-wider mb-0.5">
                   Localização
                 </label>
-                <input
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
-                  placeholder="Bairro, cidade ou título"
-                  className="w-full text-sm font-medium text-charcoal bg-transparent border-0 outline-none placeholder:text-gray-text/60 placeholder:font-normal"
-                />
+                <div className="relative">
+                  <select
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full text-sm font-medium text-charcoal bg-transparent border-0 outline-none cursor-pointer pr-5 appearance-none"
+                  >
+                    {locations.map((l) => (
+                      <option key={l}>{l}</option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={14}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-text pointer-events-none"
+                  />
+                </div>
               </div>
             </div>
 
