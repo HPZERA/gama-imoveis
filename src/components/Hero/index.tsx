@@ -125,7 +125,10 @@ export default function Hero() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
+          <source
+            src="https://hpqmzsqtzrpzanqtkcbf.supabase.co/storage/v1/object/public/imoveis/site/hero-video.mp4"
+            type="video/mp4"
+          />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/80" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
