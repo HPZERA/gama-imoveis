@@ -32,8 +32,6 @@ export const locations = [
   "Medeiros",
   "Menino Jesus",
   "Novo Horizonte",
-  "Novo Mundo",
-  "Piratini",
   "Progresso",
   "Santa Clara",
   "Santa Isabel",
