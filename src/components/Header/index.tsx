@@ -3,16 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageCircle, ChevronDown } from "lucide-react";
+import { Menu, X, MessageCircle } from "lucide-react";
 import { useLeadPopup } from "@/context/LeadPopupContext";
 
 const navItems = [
-  { label: "Comprar", href: "#imoveis", hasDropdown: true },
-  { label: "Alugar", href: "#imoveis", hasDropdown: false },
-  { label: "Lançamentos", href: "#imoveis", hasDropdown: false },
-  { label: "Sobre", href: "#sobre", hasDropdown: false },
-  { label: "Serviços", href: "#servicos", hasDropdown: false },
-  { label: "Contato", href: "#contato", hasDropdown: false },
+  { label: "Comprar", href: "/imoveis?tipo=venda" },
+  { label: "Alugar", href: "/imoveis?tipo=aluguel" },
+  { label: "Lançamentos", href: "#imoveis" },
+  { label: "Sobre", href: "#sobre" },
+  { label: "Serviços", href: "#servicos" },
+  { label: "Contato", href: "#contato" },
 ];
 
 const WA_URL = "https://wa.me/5555992103520";
@@ -81,7 +81,6 @@ export default function Header() {
               }`}
             >
               {item.label}
-              {item.hasDropdown && <ChevronDown size={14} />}
             </a>
           ))}
         </nav>
