@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Building2, LayoutDashboard, Home, Users, UserCog, LogOut, Menu, X } from "lucide-react";
+import { Building2, LayoutDashboard, Home, Users, UserCog, LogOut, Menu, X, HardDrive, Settings } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -11,6 +11,8 @@ const nav = [
   { href: "/admin/imoveis", label: "Imóveis", icon: Home },
   { href: "/admin/leads", label: "Leads", icon: Users },
   { href: "/admin/usuarios", label: "Usuários", icon: UserCog },
+  { href: "/admin/armazenamento", label: "Armazenamento", icon: HardDrive },
+  { href: "/admin/configuracoes/imagens", label: "Config. Imagens", icon: Settings },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {

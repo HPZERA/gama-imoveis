@@ -5,45 +5,62 @@ import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 
 const LOGO_PATH = join(process.cwd(), "public", "logo admin.png");
-// Proporção 4:3 — padrão fotografia imobiliária, todas as imagens ficam iguais
-const OUT_WIDTH = 1920;
-const OUT_HEIGHT = 1440;
 const OPACITY = 0.65;
 
-async function applyWatermark(fileBuffer: Buffer): Promise<Buffer> {
-  // Corta e redimensiona para 1920×1440 (4:3) centralizado — garante tamanho igual em todas
-  const image = sharp(fileBuffer).resize(OUT_WIDTH, OUT_HEIGHT, {
+async function getConfig(supabase: Awaited<ReturnType<typeof createClient>>) {
+  try {
+    const { data } = await supabase
+      .from("image_config")
+      .select("max_width, quality")
+      .eq("id", "default")
+      .single();
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+async function applyWatermark(
+  fileBuffer: Buffer,
+  outWidth: number,
+  outHeight: number,
+  quality: number
+): Promise<Buffer> {
+  const image = sharp(fileBuffer).resize(outWidth, outHeight, {
     fit: "cover",
     position: "center",
   });
 
   if (!existsSync(LOGO_PATH)) {
-    return image.webp({ quality: 85 }).toBuffer();
+    return image.webp({ quality }).toBuffer();
   }
 
-  // Logo sempre com 42% da largura → mesmo tamanho em todas as imagens
-  const logoWidth = Math.round(OUT_WIDTH * 0.42);
+  const logoWidth = Math.round(outWidth * 0.42);
   const resizedBuffer = await sharp(readFileSync(LOGO_PATH))
     .resize(logoWidth)
     .ensureAlpha()
     .toBuffer();
 
-  // Aplica 65% de opacidade manipulando o canal alpha (byte 3 de cada pixel RGBA)
-  const { data, info } = await sharp(resizedBuffer).raw().toBuffer({ resolveWithObject: true });
+  const { data, info } = await sharp(resizedBuffer)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
   for (let i = 3; i < data.length; i += 4) {
     data[i] = Math.round(data[i] * OPACITY);
   }
+
   const logoFinal = await sharp(Buffer.from(data), {
     raw: { width: info.width, height: info.height, channels: 4 },
-  }).png().toBuffer();
+  })
+    .png()
+    .toBuffer();
 
-  // Posição fixa: centralizado horizontalmente, 80% para baixo verticalmente
-  const left = Math.round((OUT_WIDTH - logoWidth) / 2);
-  const top = Math.round(OUT_HEIGHT * 0.80 - info.height / 2);
+  const left = Math.round((outWidth - logoWidth) / 2);
+  const top = Math.round(outHeight * 0.8 - info.height / 2);
 
   return image
     .composite([{ input: logoFinal, left, top, blend: "over" }])
-    .webp({ quality: 85 })
+    .webp({ quality })
     .toBuffer();
 }
 
@@ -55,18 +72,36 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Nenhum arquivo enviado" }, { status: 400 });
   }
 
+  const supabase = await createClient();
+  const config = await getConfig(supabase);
+
+  const outWidth = config?.max_width ?? 1920;
+  const quality = config?.quality ?? 85;
+  const outHeight = Math.round(outWidth * 0.75); // 4:3
+
   const rawBuffer = Buffer.from(await file.arrayBuffer());
+
+  // Capture original metadata before processing
+  let originalWidth: number | undefined;
+  let originalHeight: number | undefined;
+  try {
+    const meta = await sharp(rawBuffer).metadata();
+    originalWidth = meta.width;
+    originalHeight = meta.height;
+  } catch {}
+
+  const originalSize = rawBuffer.length;
 
   let finalBuffer: Buffer;
   try {
-    finalBuffer = await applyWatermark(rawBuffer);
+    finalBuffer = await applyWatermark(rawBuffer, outWidth, outHeight, quality);
   } catch {
     finalBuffer = rawBuffer;
   }
 
-  const supabase = await createClient();
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
+  const optimizedSize = finalBuffer.length;
 
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
   const { error } = await supabase.storage
     .from("imoveis")
     .upload(path, finalBuffer, { contentType: "image/webp" });
@@ -76,5 +111,14 @@ export async function POST(req: NextRequest) {
   }
 
   const { data } = supabase.storage.from("imoveis").getPublicUrl(path);
-  return NextResponse.json({ url: data.publicUrl });
+
+  return NextResponse.json({
+    url: data.publicUrl,
+    originalSize,
+    optimizedSize,
+    originalWidth,
+    originalHeight,
+    optimizedWidth: outWidth,
+    optimizedHeight: outHeight,
+  });
 }

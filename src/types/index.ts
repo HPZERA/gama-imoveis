@@ -45,6 +45,25 @@ export interface Service {
 export type PropertyType = "house" | "apartment" | "commercial" | "land" | "all";
 export type TransactionType = "sale" | "rent" | "all";
 
+export interface ImageConfig {
+  max_width: number;
+  quality: number;
+  format: "webp" | "jpg" | "png";
+  webp_enabled: boolean;
+  max_file_size_mb: number;
+  max_images_per_property: number;
+  updated_at?: string;
+}
+
+export interface UploadStat {
+  originalSize: number;
+  optimizedSize: number;
+  originalWidth?: number;
+  originalHeight?: number;
+  optimizedWidth: number;
+  optimizedHeight: number;
+}
+
 export interface DbProperty {
   id: number | string;
   title: string;
