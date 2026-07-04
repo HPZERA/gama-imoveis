@@ -74,6 +74,10 @@ export interface DbProperty {
   category: string | null;
   bedrooms: number | null;
   bathrooms: number | null;
+  suites?: number | null;
+  parking_spots?: number | null;
+  land_area?: number | null;
+  built_area?: number | null;
   area: number | null;
   address: string | null;
   neighborhood: string | null;

@@ -32,7 +32,7 @@ function PropertyCard({ p, priority, showCategory }: { p: DbProperty; priority?:
         {imgs.length > 0 ? (
           <Swiper
             modules={[Pagination]}
-            pagination={{ clickable: true }}
+            pagination={{ clickable: true, dynamicBullets: true }}
             loop={imgs.length > 1}
             touchStartPreventDefault={false}
             simulateTouch={false}

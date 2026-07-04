@@ -40,7 +40,7 @@ function PropertyCard({ property, delay, priority }: { property: DbProperty; del
         {imgs.length > 0 ? (
           <Swiper
             modules={[Pagination, Autoplay]}
-            pagination={{ clickable: true }}
+            pagination={{ clickable: true, dynamicBullets: true }}
             loop={imgs.length > 1}
             autoplay={{ delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true }}
             touchStartPreventDefault={false}

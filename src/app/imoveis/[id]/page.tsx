@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PropertyGallery from "./PropertyGallery";
-import { BedDouble, Bath, Square, MapPin, ArrowLeft, MessageCircle } from "lucide-react";
+import { BedDouble, Bath, Square, MapPin, ArrowLeft, MessageCircle, Car } from "lucide-react";
 import type { Metadata } from "next";
 import type { LucideIcon } from "lucide-react";
 
@@ -80,11 +80,17 @@ export default async function PropertyDetailPage({
   );
   const waUrl = `https://wa.me/5555992103520?text=${waText}`;
 
-  const features = [
-    p.area ? { icon: Square, label: `${p.area} m²`, key: "area" } : null,
-    p.bedrooms ? { icon: BedDouble, label: `${p.bedrooms} quarto${p.bedrooms > 1 ? "s" : ""}`, key: "bed" } : null,
-    p.bathrooms ? { icon: Bath, label: `${p.bathrooms} banheiro${p.bathrooms > 1 ? "s" : ""}`, key: "bath" } : null,
-  ].filter(Boolean) as { icon: LucideIcon; label: string; key: string }[];
+  const detailRows = [
+    p.bedrooms ? { icon: BedDouble, label: "Dormitórios", value: `${p.bedrooms}`, key: "bed" } : null,
+    p.suites ? { icon: BedDouble, label: "Suítes", value: `${p.suites}`, key: "suite" } : null,
+    p.bathrooms ? { icon: Bath, label: "Banheiros", value: `${p.bathrooms}`, key: "bath" } : null,
+    p.parking_spots ? { icon: Car, label: "Vagas", value: `${p.parking_spots}`, key: "park" } : null,
+    p.land_area ? { icon: Square, label: "Terreno", value: `${p.land_area}m²`, key: "land" } : null,
+    p.built_area ? { icon: Square, label: "Área construída", value: `${p.built_area}m²`, key: "built" } : null,
+    !p.land_area && !p.built_area && p.area ? { icon: Square, label: "Área", value: `${p.area}m²`, key: "area" } : null,
+    p.neighborhood ? { icon: MapPin, label: "Bairro", value: p.neighborhood, key: "neighborhood" } : null,
+    p.city ? { icon: MapPin, label: "Cidade", value: p.city, key: "city" } : null,
+  ].filter(Boolean) as { icon: LucideIcon; label: string; value: string; key: string }[];
 
   return (
     <>
@@ -165,18 +171,6 @@ export default async function PropertyDetailPage({
                   </div>
                 )}
 
-                {/* Features */}
-                {features.length > 0 && (
-                  <div className="flex flex-wrap gap-4 py-4 border-t border-gray-100">
-                    {features.map(({ icon: Icon, label, key }) => (
-                      <div key={key} className="flex items-center gap-2 text-sm text-charcoal-mid">
-                        <Icon size={16} className="text-brand" />
-                        <span className="font-medium">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
                 {/* CTA WhatsApp */}
                 <a
                   href={waUrl}
@@ -204,9 +198,31 @@ export default async function PropertyDetailPage({
             </div>
           </div>
 
+          {/* Detalhes do imóvel */}
+          {detailRows.length > 0 && (
+            <div className="mt-10 rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+              <div className="bg-charcoal border-l-4 border-brand px-6 py-4">
+                <h2 className="text-white font-bold text-sm uppercase tracking-wide">
+                  Detalhes do imóvel
+                </h2>
+              </div>
+              <div className="bg-gray-50 divide-y divide-gray-200">
+                {detailRows.map(({ icon: Icon, label, value, key }) => (
+                  <div key={key} className="flex items-center justify-between px-6 py-3 text-sm">
+                    <span className="flex items-center gap-2 text-gray-500">
+                      <Icon size={15} className="text-brand" />
+                      {label}
+                    </span>
+                    <span className="font-semibold text-charcoal">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Description */}
           {p.description && (
-            <div className="mt-10 bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-8">
+            <div className="mt-6 bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] p-8">
               <h2 className="text-xl font-bold text-charcoal font-display mb-4">
                 Descrição do imóvel
               </h2>
