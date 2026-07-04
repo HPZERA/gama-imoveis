@@ -85,10 +85,15 @@ function PropertyCard({ p, priority, showCategory }: { p: DbProperty; priority?:
           {p.title}
         </h3>
         {(p.neighborhood || p.city) && (
-          <div className="flex items-center gap-1.5 text-gray-text text-sm mb-4">
+          <div className="flex items-center gap-1.5 text-gray-text text-sm mb-2">
             <MapPin size={13} className="text-brand flex-shrink-0" />
             <span>{[p.neighborhood, p.city].filter(Boolean).join(", ")}</span>
           </div>
+        )}
+        {p.description && (
+          <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">
+            {p.description}
+          </p>
         )}
         <div className="flex items-center gap-4 py-3 border-t border-gray-100 mb-4 text-sm text-charcoal-mid">
           {p.area ? (

@@ -104,10 +104,16 @@ function PropertyCard({ property, delay, priority }: { property: DbProperty; del
         </h3>
 
         {(property.neighborhood || property.city) && (
-          <div className="flex items-center gap-1.5 text-gray-text text-sm mb-4">
+          <div className="flex items-center gap-1.5 text-gray-text text-sm mb-2">
             <MapPin size={13} className="text-brand flex-shrink-0" />
             <span>{[property.neighborhood, property.city].filter(Boolean).join(", ")}</span>
           </div>
+        )}
+
+        {property.description && (
+          <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">
+            {property.description}
+          </p>
         )}
 
         <div className="flex items-center gap-4 py-3 border-t border-gray-100 mb-4 text-sm text-charcoal-mid">
