@@ -1,117 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search, MapPin, DollarSign, Home, ChevronDown } from "lucide-react";
-
-const comprarTypes = [
-  "Todos os tipos",
-  "Casa",
-  "Apartamento",
-  "Comercial",
-  "Terreno",
-];
-
-const alugarTypes = [
-  "Todos os tipos",
-  "Casa",
-  "Apartamento",
-  "Comercial",
-];
-
-const locations = [
-  "Todas as localizações",
-  "3 de Outubro Andrade",
-  "Área Rural de São Gabriel",
-  "Baltar",
-  "Bela Vista",
-  "Bom Fim",
-  "Camita",
-  "Capiotti Mariana",
-  "Centro",
-  "Cidade Nova",
-  "Corredor da Balança",
-  "Dr Dácio",
-  "Élbio Vargas",
-  "Gabrielense",
-  "Independência",
-  "Jardim das Hortênsias",
-  "Jardim Europa",
-  "Jardim Primavera",
-  "Jardim Sabina",
-  "Jardim Vila Maria",
-  "Jardins",
-  "Loteamento Menino Jesus",
-  "Loteamento Santa Regina",
-  "Loteamento Tarumã",
-  "Medeiros",
-  "Menino Jesus",
-  "Novo Horizonte",
-  "Novo Mundo",
-  "Piratini",
-  "Progresso",
-  "Santa Clara",
-  "Santa Isabel",
-  "Santa Regina",
-  "Santo Antônio",
-  "São Bento",
-  "São Clemente",
-  "São Gregório",
-  "São Luiz",
-  "Siqueira",
-  "Trindade",
-  "Universitário",
-  "Vila Maria",
-  "Vila Rocha",
-  "Vivenda",
-];
-
-const comprarPrices = [
-  "Qualquer valor",
-  "Até R$ 100.000",
-  "Até R$ 150.000",
-  "Até R$ 200.000",
-  "Até R$ 250.000",
-  "Até R$ 300.000",
-  "Até R$ 350.000",
-  "Até R$ 400.000",
-  "Até R$ 450.000",
-  "Até R$ 500.000",
-  "Até R$ 600.000",
-  "Até R$ 700.000",
-  "Até R$ 800.000",
-  "Até R$ 900.000",
-  "Até R$ 1.000.000",
-];
-
-const alugarPrices = [
-  "Qualquer valor",
-  "Até R$ 500",
-  "Até R$ 750",
-  "Até R$ 1.000",
-  "Até R$ 1.500",
-  "Até R$ 2.000",
-  "Até R$ 2.500",
-  "Até R$ 3.000",
-  "Até R$ 4.000",
-  "Até R$ 5.000",
-  "Até R$ 7.000",
-  "Até R$ 10.000",
-];
+import { saleTypes, rentTypes, salePrices, rentPrices } from "@/lib/searchOptions";
 
 export default function Hero() {
+  const router = useRouter();
   const [transactionType, setTransactionType] = useState<"comprar" | "alugar">("comprar");
-  const [propertyType, setPropertyType] = useState(comprarTypes[0]);
-  const [location, setLocation] = useState(locations[0]);
+  const [propertyType, setPropertyType] = useState(saleTypes[0]);
+  const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState("Qualquer valor");
 
-  const priceRanges = transactionType === "comprar" ? comprarPrices : alugarPrices;
-  const propertyTypes = transactionType === "comprar" ? comprarTypes : alugarTypes;
+  const priceRanges = transactionType === "comprar" ? salePrices : rentPrices;
+  const propertyTypes = transactionType === "comprar" ? saleTypes : rentTypes;
 
   const handleTransactionChange = (type: "comprar" | "alugar") => {
     setTransactionType(type);
     setPriceRange("Qualquer valor");
     setPropertyType("Todos os tipos");
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    params.set("tipo", transactionType === "comprar" ? "venda" : "aluguel");
+    if (propertyType !== "Todos os tipos") params.set("categoria", propertyType);
+    if (location.trim()) params.set("busca", location.trim());
+    const selectedPrice = priceRanges.find((p) => p.label === priceRange);
+    if (selectedPrice?.max != null) params.set("precoMax", String(selectedPrice.max));
+    router.push(`/imoveis?${params.toString()}`);
   };
 
   return (
@@ -232,21 +150,13 @@ export default function Hero() {
                 <label className="block text-[10px] font-semibold text-gray-text uppercase tracking-wider mb-0.5">
                   Localização
                 </label>
-                <div className="relative">
-                  <select
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full text-sm font-medium text-charcoal bg-transparent border-0 outline-none cursor-pointer pr-5 appearance-none"
-                  >
-                    {locations.map((l) => (
-                      <option key={l}>{l}</option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={14}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-text pointer-events-none"
-                  />
-                </div>
+                <input
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+                  placeholder="Bairro, cidade ou título"
+                  className="w-full text-sm font-medium text-charcoal bg-transparent border-0 outline-none placeholder:text-gray-text/60 placeholder:font-normal"
+                />
               </div>
             </div>
 
@@ -266,7 +176,7 @@ export default function Hero() {
                     className="w-full text-sm font-medium text-charcoal bg-transparent border-0 outline-none cursor-pointer pr-5 appearance-none"
                   >
                     {priceRanges.map((r) => (
-                      <option key={r}>{r}</option>
+                      <option key={r.label}>{r.label}</option>
                     ))}
                   </select>
                   <ChevronDown
@@ -280,7 +190,7 @@ export default function Hero() {
             {/* Search button */}
             <button
               className="flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-bold px-8 py-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md whitespace-nowrap text-sm"
-              onClick={() => {}}
+              onClick={handleSearch}
             >
               <Search size={18} strokeWidth={2.5} />
               Buscar

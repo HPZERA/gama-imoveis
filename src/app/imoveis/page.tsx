@@ -6,14 +6,14 @@ import PropertyList from "@/components/PropertyList";
 
 export const revalidate = 0;
 
-type SearchParams = { tipo?: string; categoria?: string };
+type SearchParams = { tipo?: string; categoria?: string; busca?: string; precoMax?: string };
 
 export default async function ImoveisPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const { tipo, categoria } = await searchParams;
+  const { tipo, categoria, busca, precoMax } = await searchParams;
 
   const supabase = await createClient();
   const { data: properties } = await supabase
@@ -31,6 +31,8 @@ export default async function ImoveisPage({
           properties={properties ?? []}
           initialType={(tipo === "venda" || tipo === "aluguel") ? tipo : "all"}
           initialCategory={categoria ?? "Todos"}
+          initialSearch={busca ?? ""}
+          initialMaxPrice={precoMax ? Number(precoMax) : null}
         />
       </main>
       <Footer />

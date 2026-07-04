@@ -1,0 +1,37 @@
+export type PriceOption = { label: string; max: number | null };
+
+export const saleTypes = ["Todos os tipos", "Casa", "Apartamento", "Comercial", "Terreno"];
+export const rentTypes = ["Todos os tipos", "Casa", "Apartamento", "Comercial"];
+
+export const salePrices: PriceOption[] = [
+  { label: "Qualquer valor", max: null },
+  { label: "Até R$ 100.000", max: 100000 },
+  { label: "Até R$ 150.000", max: 150000 },
+  { label: "Até R$ 200.000", max: 200000 },
+  { label: "Até R$ 250.000", max: 250000 },
+  { label: "Até R$ 300.000", max: 300000 },
+  { label: "Até R$ 350.000", max: 350000 },
+  { label: "Até R$ 400.000", max: 400000 },
+  { label: "Até R$ 450.000", max: 450000 },
+  { label: "Até R$ 500.000", max: 500000 },
+  { label: "Até R$ 600.000", max: 600000 },
+  { label: "Até R$ 700.000", max: 700000 },
+  { label: "Até R$ 800.000", max: 800000 },
+  { label: "Até R$ 900.000", max: 900000 },
+  { label: "Até R$ 1.000.000", max: 1000000 },
+];
+
+export const rentPrices: PriceOption[] = [
+  { label: "Qualquer valor", max: null },
+  { label: "Até R$ 500", max: 500 },
+  { label: "Até R$ 750", max: 750 },
+  { label: "Até R$ 1.000", max: 1000 },
+  { label: "Até R$ 1.500", max: 1500 },
+  { label: "Até R$ 2.000", max: 2000 },
+  { label: "Até R$ 2.500", max: 2500 },
+  { label: "Até R$ 3.000", max: 3000 },
+  { label: "Até R$ 4.000", max: 4000 },
+  { label: "Até R$ 5.000", max: 5000 },
+  { label: "Até R$ 7.000", max: 7000 },
+  { label: "Até R$ 10.000", max: 10000 },
+];

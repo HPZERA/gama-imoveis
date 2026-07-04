@@ -5,8 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import { BedDouble, Bath, Square, MapPin, ArrowRight, Search, ArrowUpDown } from "lucide-react";
+import { BedDouble, Bath, Square, MapPin, ArrowRight, Search, ArrowUpDown, X } from "lucide-react";
 import type { DbProperty } from "@/types";
+import { salePrices, rentPrices } from "@/lib/searchOptions";
 
 function formatPrice(price: number | null, label: string | null, type: "venda" | "aluguel") {
   if (label) return label;
@@ -139,15 +140,31 @@ export default function PropertyList({
   properties,
   initialType = "all",
   initialCategory = "Todos",
+  initialSearch = "",
+  initialMaxPrice = null,
 }: {
   properties: DbProperty[];
   initialType?: "all" | "venda" | "aluguel";
   initialCategory?: string;
+  initialSearch?: string;
+  initialMaxPrice?: number | null;
 }) {
   const [typeFilter, setTypeFilter] = useState<"all" | "venda" | "aluguel">(initialType);
   const [categoryFilter, setCategoryFilter] = useState(initialCategory);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [priceSort, setPriceSort] = useState<"default" | "asc" | "desc">("default");
+  const [maxPrice, setMaxPrice] = useState<number | null>(initialMaxPrice);
+
+  const priceOptions = typeFilter === "aluguel" ? rentPrices : salePrices;
+  const hasActiveFilters = typeFilter !== "all" || categoryFilter !== "Todos" || !!search || maxPrice != null;
+
+  const clearFilters = () => {
+    setTypeFilter("all");
+    setCategoryFilter("Todos");
+    setSearch("");
+    setMaxPrice(null);
+    setPriceSort("default");
+  };
 
   const categoryKeys = ["Casa", "Apartamento", "Comercial", "Terreno"];
 
@@ -173,20 +190,21 @@ export default function PropertyList({
     const result = properties.filter((p) => {
       if (typeFilter !== "all" && p.type !== typeFilter) return false;
       if (categoryFilter !== "Todos" && p.category !== categoryFilter) return false;
+      if (maxPrice != null && (p.price == null || p.price > maxPrice)) return false;
       if (search) {
         const q = search.toLowerCase();
-        return (
-          p.title.toLowerCase().includes(q) ||
-          (p.neighborhood ?? "").toLowerCase().includes(q) ||
-          (p.city ?? "").toLowerCase().includes(q)
-        );
+        if (
+          !p.title.toLowerCase().includes(q) &&
+          !(p.neighborhood ?? "").toLowerCase().includes(q) &&
+          !(p.city ?? "").toLowerCase().includes(q)
+        ) return false;
       }
       return true;
     });
     if (priceSort === "asc") return [...result].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
     if (priceSort === "desc") return [...result].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     return result;
-  }, [properties, typeFilter, categoryFilter, search, priceSort]);
+  }, [properties, typeFilter, categoryFilter, search, priceSort, maxPrice]);
 
   return (
     <div>
@@ -266,6 +284,19 @@ export default function PropertyList({
               />
             </div>
 
+            {/* Faixa de preço máxima */}
+            <div className="relative">
+              <select
+                value={maxPrice ?? ""}
+                onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : null)}
+                className="text-sm border border-gray-200 rounded-xl pl-4 pr-4 py-2 focus:outline-none focus:border-brand text-charcoal bg-white appearance-none cursor-pointer"
+              >
+                {priceOptions.map((p) => (
+                  <option key={p.label} value={p.max ?? ""}>{p.label}</option>
+                ))}
+              </select>
+            </div>
+
             {/* Ordenação por preço */}
             <div className="relative">
               <ArrowUpDown size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -279,6 +310,16 @@ export default function PropertyList({
                 <option value="desc">Maior preço primeiro</option>
               </select>
             </div>
+
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 text-sm font-medium text-gray-400 hover:text-charcoal transition-colors"
+              >
+                <X size={14} />
+                Limpar filtros
+              </button>
+            )}
           </div>
 
         </div>
@@ -286,7 +327,7 @@ export default function PropertyList({
 
       <div className="max-w-7xl mx-auto px-6 py-4">
         <p className="text-sm text-gray-400">
-          {filtered.length} imóvel{filtered.length !== 1 ? "s" : ""} encontrado{filtered.length !== 1 ? "s" : ""}
+          {filtered.length === 1 ? "1 imóvel encontrado" : `${filtered.length} imóveis encontrados`}
         </p>
       </div>
 
