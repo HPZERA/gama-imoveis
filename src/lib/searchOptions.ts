@@ -1,14 +1,17 @@
 export type PriceOption = { label: string; max: number | null };
 
+// Lista oficial extraída do próprio formulário de busca do site antigo
+// (gamaimoveissg.com.br, campo "local").
 export const locations = [
   "Todas as localizações",
-  "3 de Outubro Andrade",
+  "3 de Outubro",
+  "Andrade",
   "Área Rural de São Gabriel",
   "Baltar",
   "Bela Vista",
   "Bom Fim",
   "Camita",
-  "Capiotti Mariana",
+  "Capiotti",
   "Centro",
   "Cidade Nova",
   "Corredor da Balança",
@@ -25,6 +28,7 @@ export const locations = [
   "Loteamento Menino Jesus",
   "Loteamento Santa Regina",
   "Loteamento Tarumã",
+  "Mariana",
   "Medeiros",
   "Menino Jesus",
   "Novo Horizonte",
@@ -42,6 +46,7 @@ export const locations = [
   "Siqueira",
   "Trindade",
   "Universitário",
+  "Vargas",
   "Vila Maria",
   "Vila Rocha",
   "Vivenda",
