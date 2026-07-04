@@ -9,10 +9,10 @@ import { useLeadPopup } from "@/context/LeadPopupContext";
 const navItems = [
   { label: "Comprar", href: "/imoveis?tipo=venda" },
   { label: "Alugar", href: "/imoveis?tipo=aluguel" },
-  { label: "Lançamentos", href: "#imoveis" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Serviços", href: "#servicos" },
-  { label: "Contato", href: "#contato" },
+  { label: "Lançamentos", href: "/#imoveis" },
+  { label: "Sobre", href: "/#sobre" },
+  { label: "Serviços", href: "/#servicos" },
+  { label: "Contato", href: "/#contato" },
 ];
 
 const WA_URL = "https://wa.me/5555992103520";
