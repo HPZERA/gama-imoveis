@@ -38,7 +38,7 @@ export default function Header() {
     >
       {/* Top bar */}
       <div
-        className={`hidden lg:flex items-center justify-between px-8 py-2 text-sm transition-all duration-300 ${
+        className={`hidden xl:flex items-center justify-between px-8 py-2 text-sm transition-all duration-300 ${
           scrolled ? "bg-[#122824] text-white" : "bg-black/40 text-white/90"
         }`}
       >
@@ -71,7 +71,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => (
             <a
               key={item.label}
@@ -89,12 +89,12 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => openPopup(WA_URL)}
-            className="hidden lg:flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 shadow-sm hover:shadow-md"
+            className="hidden xl:flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 shadow-sm hover:shadow-md"
           >
             Fale Conosco
           </button>
           <button
-            className={`lg:hidden p-2 rounded-lg transition-colors ${
+            className={`xl:hidden p-2 rounded-lg transition-colors ${
               scrolled ? "text-white hover:bg-white/10" : "text-white hover:bg-white/10"
             }`}
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -113,7 +113,7 @@ export default function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="lg:hidden bg-white border-t border-gray-100 shadow-lg overflow-hidden"
+            className="xl:hidden bg-white border-t border-gray-100 shadow-lg overflow-hidden"
           >
             <nav className="flex flex-col p-4 gap-1">
               {navItems.map((item) => (
