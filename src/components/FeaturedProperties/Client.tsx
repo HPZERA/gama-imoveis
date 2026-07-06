@@ -8,6 +8,7 @@ import { Pagination, Autoplay } from "swiper/modules";
 import Link from "next/link";
 import { BedDouble, Bath, Square, ArrowRight, MapPin } from "lucide-react";
 import type { DbProperty } from "@/types";
+import { withCacheBust } from "@/lib/imageUrl";
 
 const MotionLink = motion(Link);
 
@@ -50,7 +51,7 @@ function PropertyCard({ property, delay, priority }: { property: DbProperty; del
             {imgs.map((img, i) => (
               <SwiperSlide key={i} className="relative h-full">
                 <Image
-                  src={img}
+                  src={withCacheBust(img)}
                   alt={`${property.title} - foto ${i + 1}`}
                   fill
                   className="object-cover"

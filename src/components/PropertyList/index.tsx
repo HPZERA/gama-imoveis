@@ -8,6 +8,7 @@ import { Pagination } from "swiper/modules";
 import { BedDouble, Bath, Square, MapPin, ArrowRight, Search, ArrowUpDown, X } from "lucide-react";
 import type { DbProperty } from "@/types";
 import { salePrices, rentPrices } from "@/lib/searchOptions";
+import { withCacheBust } from "@/lib/imageUrl";
 
 function formatPrice(price: number | null, label: string | null, type: "venda" | "aluguel") {
   if (label) return label;
@@ -41,7 +42,7 @@ function PropertyCard({ p, priority, showCategory }: { p: DbProperty; priority?:
             {imgs.map((img, i) => (
               <SwiperSlide key={i} className="relative h-full">
                 <Image
-                  src={img}
+                  src={withCacheBust(img)}
                   alt={`${p.title} - foto ${i + 1}`}
                   fill
                   className="object-cover"
