@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, ArrowUpDown, X } from "lucide-react";
+import { Search, ArrowUpDown, X, ArrowRight } from "lucide-react";
 import type { DbProperty } from "@/types";
 import { salePrices, rentPrices } from "@/lib/searchOptions";
 import PropertyCard from "@/components/PropertyCard";
@@ -20,6 +20,24 @@ const CATEGORY_TITLE: Record<string, string> = {
   "Comercial": "Comercial",
   "Terreno": "Terrenos",
 };
+
+// Plural em minúsculo, usado para compor a frase do botão "Ver mais ..."
+const CATEGORY_PLURAL: Record<string, string> = {
+  "Casa": "casas",
+  "Apartamento": "apartamentos",
+  "Comercial": "imóveis comerciais",
+  "Terreno": "terrenos",
+};
+
+function getMoreLabel(typeFilter: "all" | "venda" | "aluguel", categoryFilter: string) {
+  const typeSuffix = typeFilter === "venda" ? "à venda" : typeFilter === "aluguel" ? "para alugar" : null;
+  const categoryPlural = categoryFilter !== "Todos" ? CATEGORY_PLURAL[categoryFilter] : null;
+
+  if (categoryPlural && typeSuffix) return `Ver mais ${categoryPlural} ${typeSuffix}`;
+  if (categoryPlural) return `Ver mais ${categoryPlural}`;
+  if (typeSuffix) return `Ver mais imóveis ${typeSuffix}`;
+  return "Ver mais imóveis";
+}
 
 export default function PropertyList({
   properties,
@@ -46,6 +64,14 @@ export default function PropertyList({
   const clearFilters = () => {
     setTypeFilter("all");
     setCategoryFilter("Todos");
+    setSearch("");
+    setMaxPrice(null);
+    setPriceSort("default");
+  };
+
+  // Remove apenas os filtros específicos (busca, preço, ordenação), mantendo
+  // os filtros principais (tipo de negociação e tipo de imóvel) intactos.
+  const showMoreRelated = () => {
     setSearch("");
     setMaxPrice(null);
     setPriceSort("default");
@@ -90,6 +116,20 @@ export default function PropertyList({
     if (priceSort === "desc") return [...result].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     return result;
   }, [properties, typeFilter, categoryFilter, search, priceSort, maxPrice]);
+
+  // Resultados considerando apenas os filtros principais (tipo de negociação
+  // e tipo de imóvel), ignorando busca/preço/ordenação — usado para saber se
+  // vale a pena oferecer o botão "Ver mais imóveis relacionados".
+  const broaderFiltered = useMemo(() => {
+    return properties.filter((p) => {
+      if (typeFilter !== "all" && p.type !== typeFilter) return false;
+      if (categoryFilter !== "Todos" && p.category !== categoryFilter) return false;
+      return true;
+    });
+  }, [properties, typeFilter, categoryFilter]);
+
+  const canShowMoreRelated = broaderFiltered.length > filtered.length;
+  const moreLabel = getMoreLabel(typeFilter, categoryFilter);
 
   return (
     <div>
@@ -218,20 +258,49 @@ export default function PropertyList({
 
       <div className="max-w-7xl mx-auto px-6 pb-20">
         {filtered.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filtered.map((p, i) => (
-              <PropertyCard
-                key={p.id}
-                p={p}
-                priority={i < 6}
-                showCategory={categoryFilter === "Todos"}
-                linkTipo={typeFilter}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filtered.map((p, i) => (
+                <PropertyCard
+                  key={p.id}
+                  p={p}
+                  priority={i < 6}
+                  showCategory={categoryFilter === "Todos"}
+                  linkTipo={typeFilter}
+                />
+              ))}
+            </div>
+
+            {canShowMoreRelated && (
+              <div className="mt-10 flex justify-center">
+                <button
+                  onClick={showMoreRelated}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-charcoal font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
+                >
+                  {moreLabel}
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="py-20 text-center">
             <p className="text-gray-400">Nenhum imóvel encontrado com esses filtros.</p>
+
+            {canShowMoreRelated && (
+              <div className="mt-6 flex flex-col items-center gap-4">
+                <p className="text-gray-500 text-sm max-w-sm">
+                  Não encontramos imóveis exatamente com esses filtros.
+                </p>
+                <button
+                  onClick={showMoreRelated}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-charcoal font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
+                >
+                  {moreLabel}
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
