@@ -4,6 +4,10 @@ import "./globals.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "swiper/css/thumbs";
+import "swiper/css/free-mode";
+import "swiper/css/zoom";
+import "swiper/css/keyboard";
 import ClientProviders from "@/components/ClientProviders";
 
 const inter = Inter({
