@@ -45,7 +45,7 @@ export default function About() {
           >
             <div className="relative w-full aspect-[3/2] rounded-[28px] overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.12)]">
               <Image
-                src="/sobre.png"
+                src="/sobre-2.png"
                 alt="Equipe Gama Imóveis"
                 fill
                 quality={100}
