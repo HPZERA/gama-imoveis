@@ -35,27 +35,28 @@ export default function About() {
   return (
     <section id="sobre" className="py-20 bg-cream">
       <div ref={ref} className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           {/* Left: Image */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7 }}
-            className="relative"
+            className="relative w-full lg:w-[600px] xl:w-[680px] flex-shrink-0"
           >
-            <div className="relative h-[480px] rounded-2xl overflow-hidden">
+            <div className="relative w-full aspect-[3/2] rounded-[28px] overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.12)]">
               <Image
-                src="https://images.unsplash.com/photo-1573496359142-b89ef3f8d655?auto=format&fit=crop&w=800&q=80"
+                src="/sobre.png"
                 alt="Equipe Gama Imóveis"
                 fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                quality={100}
+                className="object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 680px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/30 to-transparent" />
             </div>
 
             {/* Floating card */}
-            <div className="absolute -bottom-6 -right-6 bg-white rounded-2xl p-5 shadow-xl max-w-52">
+            <div className="absolute -bottom-5 -right-5 bg-white rounded-2xl p-5 shadow-xl max-w-52">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center">
                   <CheckCircle2 size={20} className="text-brand" />
@@ -75,12 +76,12 @@ export default function About() {
           </motion.div>
 
           {/* Right: Content */}
-          <div>
+          <div className="flex-1 flex flex-col justify-center">
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5 }}
-              className="inline-block text-brand font-semibold text-sm uppercase tracking-widest mb-4"
+              className="inline-block text-brand font-semibold text-sm uppercase tracking-widest mb-5"
             >
               Sobre nós
             </motion.span>
@@ -89,7 +90,7 @@ export default function About() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-3xl lg:text-4xl font-bold text-charcoal font-display mb-6 leading-tight"
+              className="text-3xl lg:text-4xl font-bold text-charcoal font-display mb-7 leading-tight"
             >
               Especialistas em
               <br />
@@ -111,7 +112,7 @@ export default function About() {
               initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-gray-text text-base leading-relaxed mb-8"
+              className="text-gray-text text-base leading-relaxed mb-9"
             >
               Nossa equipe de consultores especializados possui profundo conhecimento do
               mercado imobiliário regional e está comprometida em oferecer uma experiência
@@ -119,7 +120,7 @@ export default function About() {
             </motion.p>
 
             {/* Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {highlights.map((item, i) => (
                 <motion.div
                   key={item.title}
@@ -148,7 +149,7 @@ export default function About() {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.5 }}
-              className="mt-8"
+              className="mt-10"
             >
               <a
                 href="#contato"
