@@ -27,7 +27,10 @@ interface OptimizeProgress {
   running: boolean;
   current: number;
   total: number;
-  processedImages: number;
+  reprocessed: number;
+  skippedLegacy: number;
+  skippedNoOriginal: number;
+  errors: number;
   savedKB: number;
   done: boolean;
   error?: string;
@@ -71,7 +74,10 @@ export default function ArmazenamentoPage() {
     running: false,
     current: 0,
     total: 0,
-    processedImages: 0,
+    reprocessed: 0,
+    skippedLegacy: 0,
+    skippedNoOriginal: 0,
+    errors: 0,
     savedKB: 0,
     done: false,
   });
@@ -98,13 +104,19 @@ export default function ArmazenamentoPage() {
       running: true,
       current: 0,
       total: stats.totalProperties,
-      processedImages: 0,
+      reprocessed: 0,
+      skippedLegacy: 0,
+      skippedNoOriginal: 0,
+      errors: 0,
       savedKB: 0,
       done: false,
     });
 
     let offset = 0;
-    let totalProcessed = 0;
+    let totalReprocessed = 0;
+    let totalSkippedLegacy = 0;
+    let totalSkippedNoOriginal = 0;
+    let totalErrors = 0;
     let totalSavedKB = 0;
 
     while (true) {
@@ -122,14 +134,20 @@ export default function ArmazenamentoPage() {
           return;
         }
 
-        totalProcessed += data.processed ?? 0;
+        totalReprocessed += data.reprocessed ?? 0;
+        totalSkippedLegacy += data.skippedLegacy ?? 0;
+        totalSkippedNoOriginal += data.skippedNoOriginal ?? 0;
+        totalErrors += data.errors ?? 0;
         totalSavedKB += data.savedKB ?? 0;
 
         setOptimize((p) => ({
           ...p,
           current: offset + 1,
           total: data.totalProperties,
-          processedImages: totalProcessed,
+          reprocessed: totalReprocessed,
+          skippedLegacy: totalSkippedLegacy,
+          skippedNoOriginal: totalSkippedNoOriginal,
+          errors: totalErrors,
           savedKB: totalSavedKB,
         }));
 
@@ -222,8 +240,10 @@ export default function ArmazenamentoPage() {
             <div>
               <h2 className="text-base font-semibold text-charcoal">Otimizar Imagens Existentes</h2>
               <p className="text-sm text-gray-500 mt-0.5">
-                Reprocessa todas as imagens aplicando as configurações atuais (qualidade, largura máxima, watermark).
-                Cada imóvel é processado individualmente para evitar timeouts.
+                Reprocessa apenas fotos enviadas pelo painel admin, a partir do arquivo original guardado
+                (nunca aplica a marca d&apos;água duas vezes). Fotos importadas do site antigo são sempre
+                puladas, preservando a logo original delas. Cada imóvel é processado individualmente para
+                evitar timeouts.
               </p>
             </div>
           </div>
@@ -243,8 +263,13 @@ export default function ArmazenamentoPage() {
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
-              <div className="flex gap-4 text-xs text-gray-500">
-                <span>{optimize.processedImages} fotos processadas</span>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                <span>{optimize.reprocessed} reprocessadas</span>
+                <span>{optimize.skippedLegacy} puladas (fotos antigas/importadas)</span>
+                {optimize.skippedNoOriginal > 0 && (
+                  <span>{optimize.skippedNoOriginal} puladas (sem original salvo)</span>
+                )}
+                {optimize.errors > 0 && <span className="text-red-500">{optimize.errors} erros</span>}
                 {optimize.savedKB > 0 && (
                   <span className="text-emerald-600">
                     {optimize.savedKB > 1024
@@ -261,7 +286,8 @@ export default function ArmazenamentoPage() {
             <div className="mb-4 flex items-center gap-2 text-emerald-600 bg-emerald-50 rounded-xl px-4 py-3 text-sm">
               <CheckCircle size={16} />
               <span>
-                Concluído! {optimize.processedImages} fotos otimizadas
+                Concluído! {optimize.reprocessed} fotos reprocessadas, {optimize.skippedLegacy} preservadas sem
+                alteração
                 {optimize.savedKB > 0 && ` — ${optimize.savedKB > 1024 ? `${(optimize.savedKB / 1024).toFixed(1)} MB` : `${optimize.savedKB} KB`} economizados`}
               </span>
             </div>

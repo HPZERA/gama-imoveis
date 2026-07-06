@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import sharp from "sharp";
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
-
-const LOGO_PATH = join(process.cwd(), "public", "logo admin.png");
-const OPACITY = 0.65;
+import { applyWatermark, ORIGINALS_PREFIX } from "@/lib/imageWatermark";
 
 async function getConfig(supabase: Awaited<ReturnType<typeof createClient>>) {
   try {
@@ -18,50 +14,6 @@ async function getConfig(supabase: Awaited<ReturnType<typeof createClient>>) {
   } catch {
     return null;
   }
-}
-
-async function applyWatermark(
-  fileBuffer: Buffer,
-  outWidth: number,
-  outHeight: number,
-  quality: number
-): Promise<Buffer> {
-  const image = sharp(fileBuffer).resize(outWidth, outHeight, {
-    fit: "cover",
-    position: "center",
-  });
-
-  if (!existsSync(LOGO_PATH)) {
-    return image.webp({ quality }).toBuffer();
-  }
-
-  const logoWidth = Math.round(outWidth * 0.42);
-  const resizedBuffer = await sharp(readFileSync(LOGO_PATH))
-    .resize(logoWidth)
-    .ensureAlpha()
-    .toBuffer();
-
-  const { data, info } = await sharp(resizedBuffer)
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
-  for (let i = 3; i < data.length; i += 4) {
-    data[i] = Math.round(data[i] * OPACITY);
-  }
-
-  const logoFinal = await sharp(Buffer.from(data), {
-    raw: { width: info.width, height: info.height, channels: 4 },
-  })
-    .png()
-    .toBuffer();
-
-  const left = Math.round((outWidth - logoWidth) / 2);
-  const top = Math.round(outHeight * 0.8 - info.height / 2);
-
-  return image
-    .composite([{ input: logoFinal, left, top, blend: "over" }])
-    .webp({ quality })
-    .toBuffer();
 }
 
 export async function POST(req: NextRequest) {
@@ -102,9 +54,26 @@ export async function POST(req: NextRequest) {
   const optimizedSize = finalBuffer.length;
 
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.webp`;
-  const { error } = await supabase.storage
+  const originalPath = `${ORIGINALS_PREFIX}/${path}`;
+
+  // Keep the pre-watermark original so this photo can be safely reprocessed
+  // later (e.g. after a quality/width config change) without ever compositing
+  // the watermark on top of itself.
+  const { error: originalError } = await supabase.storage
     .from("imoveis")
-    .upload(path, finalBuffer, { contentType: "image/webp" });
+    .upload(originalPath, rawBuffer, {
+      contentType: file.type || "application/octet-stream",
+    });
+
+  const { error } = await supabase.storage.from("imoveis").upload(path, finalBuffer, {
+    contentType: "image/webp",
+    metadata: {
+      source: "admin_upload",
+      watermarked: "true",
+      original_path: originalError ? "" : originalPath,
+      processed_at: new Date().toISOString(),
+    },
+  });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -1,51 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import sharp from "sharp";
-import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { applyWatermark, isAdminUploadFilename } from "@/lib/imageWatermark";
 
-const LOGO_PATH = join(process.cwd(), "public", "logo admin.png");
-const OPACITY = 0.65;
-
-async function reprocess(
-  rawBuffer: Buffer,
-  width: number,
-  height: number,
-  quality: number
-): Promise<Buffer> {
-  const image = sharp(rawBuffer).resize(width, height, {
-    fit: "cover",
-    position: "center",
-  });
-
-  if (!existsSync(LOGO_PATH)) {
-    return image.webp({ quality }).toBuffer();
-  }
-
-  const logoWidth = Math.round(width * 0.42);
-  const resized = await sharp(readFileSync(LOGO_PATH))
-    .resize(logoWidth)
-    .ensureAlpha()
-    .toBuffer();
-
-  const { data, info } = await sharp(resized).raw().toBuffer({ resolveWithObject: true });
-  for (let i = 3; i < data.length; i += 4) {
-    data[i] = Math.round(data[i] * OPACITY);
-  }
-  const logoFinal = await sharp(Buffer.from(data), {
-    raw: { width: info.width, height: info.height, channels: 4 },
-  })
-    .png()
-    .toBuffer();
-
-  const left = Math.round((width - logoWidth) / 2);
-  const top = Math.round(height * 0.8 - info.height / 2);
-
-  return image
-    .composite([{ input: logoFinal, left, top, blend: "over" }])
-    .webp({ quality })
-    .toBuffer();
-}
+type ImageLogEntry = {
+  filename: string;
+  action: "reprocessed" | "skipped_legacy" | "skipped_no_original" | "error";
+  detail?: string;
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -83,37 +44,88 @@ export async function POST(req: NextRequest) {
       .select("*", { count: "exact", head: true });
 
     if (!properties?.length) {
-      return NextResponse.json({ processed: 0, savedBytes: 0, done: true, nextOffset: offset, totalProperties: total ?? 0 });
+      return NextResponse.json({
+        reprocessed: 0,
+        skippedLegacy: 0,
+        skippedNoOriginal: 0,
+        errors: 0,
+        savedBytes: 0,
+        savedKB: 0,
+        done: true,
+        nextOffset: offset,
+        totalProperties: total ?? 0,
+        log: [],
+      });
     }
 
     const prop = properties[0];
-    let processed = 0;
+    let reprocessed = 0;
+    let skippedLegacy = 0;
+    let skippedNoOriginal = 0;
+    let errors = 0;
     let savedBytes = 0;
+    const log: ImageLogEntry[] = [];
 
     if (Array.isArray(prop.images)) {
       for (const url of prop.images) {
+        const segments = url.split("/");
+        const filename = segments[segments.length - 1];
+
+        // Images imported from the legacy site already carry whatever
+        // watermark the old site baked in. The system must never composite
+        // a new logo on top of them — that's exactly what caused the
+        // duplicated-logo bug. Only touch images uploaded through the admin
+        // panel (recognizable by their generated filename pattern).
+        if (!isAdminUploadFilename(filename)) {
+          skippedLegacy++;
+          log.push({ filename, action: "skipped_legacy" });
+          continue;
+        }
+
         try {
-          const segments = url.split("/");
-          const filename = segments[segments.length - 1];
+          const { data: info } = await supabase.storage.from("imoveis").info(filename);
+          const originalPath = info?.metadata?.original_path as string | undefined;
 
-          const { data: fileData } = await supabase.storage
+          if (!originalPath) {
+            // Admin-uploaded image from before original-backup tracking existed.
+            // Reprocessing it would composite the watermark a second time.
+            skippedNoOriginal++;
+            log.push({ filename, action: "skipped_no_original" });
+            continue;
+          }
+
+          const { data: originalFile } = await supabase.storage
             .from("imoveis")
-            .download(filename);
-          if (!fileData) continue;
+            .download(originalPath);
+          if (!originalFile) {
+            skippedNoOriginal++;
+            log.push({ filename, action: "skipped_no_original", detail: "original ausente no storage" });
+            continue;
+          }
 
-          const original = Buffer.from(await fileData.arrayBuffer());
-          const optimized = await reprocess(original, outWidth, outHeight, quality);
+          const originalBuffer = Buffer.from(await originalFile.arrayBuffer());
+          const optimized = await applyWatermark(originalBuffer, outWidth, outHeight, quality);
 
-          const saving = original.length - optimized.length;
-          savedBytes += Math.max(0, saving);
+          const { data: currentFile } = await supabase.storage.from("imoveis").download(filename);
+          const currentSize = currentFile ? currentFile.size : 0;
+          savedBytes += Math.max(0, currentSize - optimized.length);
 
-          await supabase.storage
-            .from("imoveis")
-            .upload(filename, optimized, { contentType: "image/webp", upsert: true });
+          await supabase.storage.from("imoveis").upload(filename, optimized, {
+            contentType: "image/webp",
+            upsert: true,
+            metadata: {
+              source: "admin_upload",
+              watermarked: "true",
+              original_path: originalPath,
+              processed_at: new Date().toISOString(),
+            },
+          });
 
-          processed++;
-        } catch {
-          // skip failed images
+          reprocessed++;
+          log.push({ filename, action: "reprocessed" });
+        } catch (e: any) {
+          errors++;
+          log.push({ filename, action: "error", detail: e.message });
         }
       }
     }
@@ -122,12 +134,16 @@ export async function POST(req: NextRequest) {
     const done = nextOffset >= (total ?? 0);
 
     return NextResponse.json({
-      processed,
+      reprocessed,
+      skippedLegacy,
+      skippedNoOriginal,
+      errors,
       savedBytes,
       savedKB: Math.round(savedBytes / 1024),
       nextOffset,
       done,
       totalProperties: total ?? 0,
+      log,
     });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
