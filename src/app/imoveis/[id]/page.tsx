@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PropertyGallery from "./PropertyGallery";
+import OtherProperties from "@/components/OtherProperties";
 import { BedDouble, Bath, Square, MapPin, ArrowLeft, MessageCircle, Car } from "lucide-react";
 import type { Metadata } from "next";
 import type { LucideIcon } from "lucide-react";
@@ -57,10 +58,13 @@ export async function generateMetadata({
 
 export default async function PropertyDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ tipo?: string }>;
 }) {
   const { id } = await params;
+  const { tipo } = await searchParams;
   const supabase = await createClient();
 
   const { data: p } = await supabase
@@ -92,6 +96,8 @@ export default async function PropertyDetailPage({
     p.city ? { icon: MapPin, label: "Cidade", value: p.city, key: "city" } : null,
   ].filter(Boolean) as { icon: LucideIcon; label: string; value: string; key: string }[];
 
+  const catalogHref = tipo ? `/imoveis?tipo=${tipo}` : "/imoveis";
+
   return (
     <>
       <Header />
@@ -102,7 +108,7 @@ export default async function PropertyDetailPage({
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center gap-2 text-sm text-gray-400">
             <Link href="/" className="hover:text-brand transition-colors">Início</Link>
             <span>/</span>
-            <Link href="/imoveis" className="hover:text-brand transition-colors">Imóveis</Link>
+            <Link href={catalogHref} className="hover:text-brand transition-colors">Imóveis</Link>
             <span>/</span>
             <span className="text-charcoal font-medium line-clamp-1">{p.title}</span>
           </div>
@@ -112,7 +118,7 @@ export default async function PropertyDetailPage({
 
           {/* Back link */}
           <Link
-            href="/imoveis"
+            href={catalogHref}
             className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-charcoal transition-colors mb-6"
           >
             <ArrowLeft size={15} />
@@ -234,6 +240,8 @@ export default async function PropertyDetailPage({
               </div>
             </div>
           </div>
+
+          <OtherProperties currentId={p.id} currentType={p.type} tipoParam={tipo} />
 
         </div>
       </main>
