@@ -253,7 +253,7 @@ export default function PropertyList({
       </div>
 
       {/* Barra de filtros */}
-      <div className="bg-white border-b border-gray-100 sticky top-16 z-30 shadow-sm">
+      <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6">
 
           {/* Linha 1: Compra/Aluguel + Busca + Ordenação */}
