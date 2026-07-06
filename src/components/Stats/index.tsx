@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { properties } from "@/data/properties";
 import StatsClient from "./Client";
 
 export default async function Stats() {
@@ -9,7 +8,5 @@ export default async function Stats() {
     .select("*", { count: "exact", head: true })
     .eq("active", true);
 
-  const total = properties.length + (dbCount ?? 0);
-
-  return <StatsClient totalProperties={total} />;
+  return <StatsClient totalProperties={dbCount ?? 0} />;
 }

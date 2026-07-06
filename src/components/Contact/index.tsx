@@ -9,6 +9,7 @@ import {
   Send,
 } from "lucide-react";
 import { useLeadPopup } from "@/context/LeadPopupContext";
+import { createClient } from "@/lib/supabase/client";
 
 const contactInfo = [
   {
@@ -42,9 +43,30 @@ export default function Contact() {
     message: "",
   });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSending(true);
+    setError(false);
+
+    const supabase = createClient();
+    const { error: insertError } = await supabase.from("leads").insert({
+      name: form.name,
+      whatsapp: form.phone,
+      email: form.email,
+      message: form.message,
+      source: "contact-form",
+    });
+
+    setSending(false);
+
+    if (insertError) {
+      setError(true);
+      return;
+    }
+
     setSent(true);
     setTimeout(() => setSent(false), 4000);
     setForm({ name: "", email: "", phone: "", message: "" });
@@ -166,6 +188,12 @@ export default function Contact() {
                 </div>
               )}
 
+              {error && (
+                <div className="mb-5 p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-white text-sm font-medium">
+                  Não foi possível enviar sua mensagem. Tente novamente ou fale conosco pelo WhatsApp.
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -225,10 +253,11 @@ export default function Contact() {
 
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2.5 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md text-sm"
+                  disabled={sending}
+                  className="flex items-center justify-center gap-2.5 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md text-sm disabled:opacity-50"
                 >
                   <Send size={16} />
-                  Enviar Mensagem
+                  {sending ? "Enviando..." : "Enviar Mensagem"}
                 </button>
 
                 <p className="text-center text-white/40 text-xs">
