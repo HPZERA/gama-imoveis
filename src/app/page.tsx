@@ -1,4 +1,6 @@
-export const dynamic = "force-dynamic";
+// Cache a página por até 1h; qualquer alteração no painel admin já invalida
+// esse cache na hora via revalidatePath (ver src/app/api/admin/properties/route.ts).
+export const revalidate = 3600;
 
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";

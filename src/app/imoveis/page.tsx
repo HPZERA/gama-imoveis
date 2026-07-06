@@ -1,10 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { getActiveProperties } from "@/lib/properties";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PropertyList from "@/components/PropertyList";
-
-export const revalidate = 0;
 
 type SearchParams = { tipo?: string; categoria?: string; busca?: string; precoMax?: string };
 
@@ -15,13 +13,7 @@ export default async function ImoveisPage({
 }) {
   const { tipo, categoria, busca, precoMax } = await searchParams;
 
-  const supabase = await createClient();
-  const { data: properties } = await supabase
-    .from("properties")
-    .select("*")
-    .eq("active", true)
-    .order("created_at", { ascending: false })
-    .limit(500);
+  const properties = await getActiveProperties();
 
   return (
     <>

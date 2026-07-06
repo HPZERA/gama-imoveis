@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getPropertyById, getPropertyMetaById } from "@/lib/properties";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -9,8 +9,6 @@ import OtherProperties from "@/components/OtherProperties";
 import { BedDouble, Bath, Square, MapPin, ArrowLeft, MessageCircle, Car } from "lucide-react";
 import type { Metadata } from "next";
 import type { LucideIcon } from "lucide-react";
-
-export const revalidate = 0;
 
 function formatPrice(price: number | null, label: string | null, type: "venda" | "aluguel") {
   if (label) return label;
@@ -31,12 +29,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("properties")
-    .select("title, description, neighborhood, city, images")
-    .eq("id", id)
-    .single();
+  const data = await getPropertyMetaById(id);
 
   if (!data) return { title: "Imóvel não encontrado | Gama Imóveis" };
 
@@ -65,14 +58,7 @@ export default async function PropertyDetailPage({
 }) {
   const { id } = await params;
   const { tipo } = await searchParams;
-  const supabase = await createClient();
-
-  const { data: p } = await supabase
-    .from("properties")
-    .select("*")
-    .eq("id", id)
-    .eq("active", true)
-    .single();
+  const p = await getPropertyById(id);
 
   if (!p) notFound();
 

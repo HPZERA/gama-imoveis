@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { getRelatedProperties } from "@/lib/properties";
 import PropertyCard from "@/components/PropertyCard";
 
 const SEE_MORE_LABEL: Record<"all" | "venda" | "aluguel", string> = {
@@ -30,29 +30,9 @@ export default async function OtherProperties({
       ? null
       : currentType;
 
-  const supabase = await createClient();
+  const { properties, count } = await getRelatedProperties(currentId, effectiveType);
 
-  let listQuery = supabase
-    .from("properties")
-    .select("*")
-    .eq("active", true)
-    .neq("id", currentId)
-    .order("created_at", { ascending: false })
-    .limit(6);
-  let countQuery = supabase
-    .from("properties")
-    .select("*", { count: "exact", head: true })
-    .eq("active", true)
-    .neq("id", currentId);
-
-  if (effectiveType) {
-    listQuery = listQuery.eq("type", effectiveType);
-    countQuery = countQuery.eq("type", effectiveType);
-  }
-
-  const [{ data: properties }, { count }] = await Promise.all([listQuery, countQuery]);
-
-  if (!properties || properties.length === 0) return null;
+  if (properties.length === 0) return null;
 
   const linkTipo = effectiveType ?? "all";
   const seeMoreHref = linkTipo === "all" ? "/imoveis" : `/imoveis?tipo=${linkTipo}`;
