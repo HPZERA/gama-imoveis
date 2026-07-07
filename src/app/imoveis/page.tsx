@@ -1,6 +1,7 @@
 import { getActiveProperties } from "@/lib/properties";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CtaBanner from "@/components/CtaBanner";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PropertyList from "@/components/PropertyList";
 
@@ -27,6 +28,7 @@ export default async function ImoveisPage({
           initialMaxPrice={precoMax ? Number(precoMax) : null}
         />
       </main>
+      <CtaBanner />
       <Footer />
       <WhatsAppButton />
     </>

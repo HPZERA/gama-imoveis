@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { useLeadPopup } from "@/context/LeadPopupContext";
@@ -20,19 +21,26 @@ const WA_URL = "https://wa.me/5555992103520";
 
 export default function Header() {
   const { openPopup } = useLeadPopup();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
+    if (!isHome) return;
     const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [isHome]);
+
+  // Non-home pages have no dark hero behind the header, so it must render
+  // solid from the start instead of transparent-until-scrolled.
+  const solid = scrolled || !isHome;
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+        solid
           ? "bg-[#1a3530] shadow-lg"
           : "bg-transparent"
       }`}
@@ -40,7 +48,7 @@ export default function Header() {
       {/* Top bar */}
       <div
         className={`hidden xl:flex items-center justify-between px-8 py-2 text-sm transition-all duration-300 ${
-          scrolled ? "bg-[#122824] text-white" : "bg-black/40 text-white/90"
+          solid ? "bg-[#122824] text-white" : "bg-black/40 text-white/90"
         }`}
       >
         <div className="flex items-center gap-6" />
@@ -59,11 +67,7 @@ export default function Header() {
             className="h-11 w-auto object-contain"
           />
           <div>
-            <span
-              className={`text-xl font-bold tracking-tight transition-colors font-display ${
-                scrolled ? "text-white" : "text-white"
-              }`}
-            >
+            <span className="text-xl font-bold tracking-tight transition-colors font-display text-white">
               Gama
             </span>
             <span className="text-xl font-bold text-brand tracking-tight font-display">
@@ -79,9 +83,7 @@ export default function Header() {
             <a
               key={item.label}
               href={item.href}
-              className={`flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-brand ${
-                scrolled ? "text-white" : "text-white"
-              }`}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/10 hover:text-brand text-white"
             >
               {item.label}
             </a>
@@ -98,9 +100,7 @@ export default function Header() {
             Fale Conosco
           </button>
           <button
-            className={`xl:hidden p-2 rounded-lg transition-colors ${
-              scrolled ? "text-white hover:bg-white/10" : "text-white hover:bg-white/10"
-            }`}
+            className="xl:hidden p-2 rounded-lg transition-colors text-white hover:bg-white/10"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >

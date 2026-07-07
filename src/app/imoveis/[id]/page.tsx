@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getPropertyById, getPropertyMetaById } from "@/lib/properties";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CtaBanner from "@/components/CtaBanner";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import PropertyGallery from "./PropertyGallery";
 import OtherProperties from "@/components/OtherProperties";
@@ -238,6 +239,7 @@ export default async function PropertyDetailPage({
 
         </div>
       </main>
+      <CtaBanner />
       <Footer />
       <WhatsAppButton />
     </>

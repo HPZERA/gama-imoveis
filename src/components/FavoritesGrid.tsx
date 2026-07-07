@@ -24,7 +24,7 @@ export default function FavoritesGrid({ properties }: { properties: DbProperty[]
         </p>
         <Link
           href="/imoveis"
-          className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-sm hover:shadow-md text-sm"
+          className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95 text-sm"
         >
           Ver imóveis disponíveis
           <ArrowRight size={16} />

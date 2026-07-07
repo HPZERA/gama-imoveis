@@ -67,10 +67,10 @@ export default function Contact() {
   }
 
   return (
-    <section id="contato" className="py-20 bg-charcoal overflow-hidden">
+    <section id="contato" className="py-16 bg-charcoal overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div ref={ref} className="text-center mb-14">
+        <div ref={ref} className="text-center mb-11">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -139,7 +139,7 @@ export default function Contact() {
               {/* WhatsApp CTA */}
               <button
                 onClick={() => openPopup("https://wa.me/5555992103520")}
-                className="mt-6 flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ea855] text-white font-semibold px-5 py-3 rounded-xl transition-all text-sm w-full"
+                className="mt-6 flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1ea855] text-white font-semibold px-5 py-3 rounded-xl transition-all text-sm w-full hover:scale-[1.02] active:scale-95"
               >
                 <MessageCircle size={18} />
                 Iniciar conversa no WhatsApp
@@ -247,7 +247,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="flex items-center justify-center gap-2.5 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md text-sm disabled:opacity-50"
+                  className="flex items-center justify-center gap-2.5 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3.5 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 text-sm disabled:opacity-50 disabled:hover:scale-100"
                 >
                   <Send size={16} />
                   {sending ? "Enviando..." : "Enviar Mensagem"}

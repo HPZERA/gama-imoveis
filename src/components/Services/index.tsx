@@ -74,10 +74,10 @@ export default function Services() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="servicos" className="py-20 bg-white">
+    <section id="servicos" className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div ref={ref} className="text-center mb-14">
+        <div ref={ref} className="text-center mb-11">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -116,7 +116,7 @@ export default function Services() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.55, delay: i * 0.08 + 0.2 }}
-              className="group block p-7 rounded-2xl border border-gray-100 hover:border-brand/40 hover:shadow-[0_8px_32px_rgba(184,212,48,0.12)] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+              className="group block p-7 rounded-2xl border border-gray-100 hover:border-brand/40 hover:shadow-[0_8px_32px_rgba(184,212,48,0.12)] hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
             >
               {/* Icon */}
               <div

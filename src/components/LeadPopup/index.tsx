@@ -62,11 +62,17 @@ export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lead-popup-title"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+    >
       <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
         <div className="bg-charcoal px-6 pt-6 pb-8 relative">
           <button
             onClick={handleDismiss}
+            aria-label="Fechar"
             className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
           >
             <X size={18} />
@@ -74,7 +80,7 @@ export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
           <div className="w-12 h-12 bg-brand/20 rounded-2xl flex items-center justify-center mb-3">
             <MessageCircle size={24} className="text-brand" />
           </div>
-          <h2 className="text-white font-bold text-lg font-display">Encontre seu imóvel ideal</h2>
+          <h2 id="lead-popup-title" className="text-white font-bold text-lg font-display">Encontre seu imóvel ideal</h2>
           <p className="text-white/50 text-sm mt-1">Deixe seu contato e um consultor entra em touch com você.</p>
         </div>
 
@@ -90,6 +96,7 @@ export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
               <div>
                 <input
                   required
+                  aria-label="Seu nome"
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Seu nome"
@@ -99,6 +106,7 @@ export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
               <div>
                 <input
                   required
+                  aria-label="Seu WhatsApp"
                   value={whatsapp}
                   onChange={e => setWhatsapp(formatWhatsapp(e.target.value))}
                   placeholder="WhatsApp: (55) 99999-9999"

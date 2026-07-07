@@ -18,9 +18,9 @@ export default function CategoriesClient({ categories }: { categories: Category[
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="categorias" className="py-20 bg-gray-light">
+    <section id="categorias" className="py-16 bg-gray-light">
       <div className="max-w-7xl mx-auto px-6">
-        <div ref={ref} className="text-center mb-14">
+        <div ref={ref} className="text-center mb-11">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}

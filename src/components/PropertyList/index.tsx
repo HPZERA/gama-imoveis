@@ -275,7 +275,7 @@ export default function PropertyList({
               <div className="mt-10 flex justify-center">
                 <button
                   onClick={showMoreRelated}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-charcoal font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-charcoal font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 text-sm"
                 >
                   {moreLabel}
                   <ArrowRight size={16} />
@@ -294,7 +294,7 @@ export default function PropertyList({
                 </p>
                 <button
                   onClick={showMoreRelated}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-charcoal font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg text-sm"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-charcoal font-bold px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95 text-sm"
                 >
                   {moreLabel}
                   <ArrowRight size={16} />

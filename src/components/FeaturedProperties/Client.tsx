@@ -11,9 +11,9 @@ export default function FeaturedClient({ properties }: { properties: DbProperty[
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="imoveis" className="py-20 bg-white">
+    <section id="imoveis" className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6">
-        <div ref={ref} className="flex flex-col lg:flex-row items-start lg:items-end justify-between mb-12 gap-4">
+        <div ref={ref} className="flex flex-col lg:flex-row items-start lg:items-end justify-between mb-10 gap-4">
           <div>
             <motion.span
               initial={{ opacity: 0, y: 10 }}

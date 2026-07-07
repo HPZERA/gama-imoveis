@@ -52,7 +52,7 @@ export default async function OtherProperties({
         <div className="flex justify-center mt-8">
           <Link
             href={seeMoreHref}
-            className="inline-flex items-center gap-2 border-2 border-brand text-brand hover:bg-brand hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 text-sm"
+            className="inline-flex items-center gap-2 border-2 border-brand text-brand hover:bg-brand hover:text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02] active:scale-95 text-sm"
           >
             {SEE_MORE_LABEL[linkTipo]}
             <ArrowRight size={15} />

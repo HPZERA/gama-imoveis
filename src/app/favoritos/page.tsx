@@ -1,6 +1,7 @@
 import { getActiveProperties } from "@/lib/properties";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CtaBanner from "@/components/CtaBanner";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import FavoritesGrid from "@/components/FavoritesGrid";
 
@@ -23,6 +24,7 @@ export default async function FavoritosPage() {
           <FavoritesGrid properties={properties ?? []} />
         </div>
       </main>
+      <CtaBanner />
       <Footer />
       <WhatsAppButton />
     </>

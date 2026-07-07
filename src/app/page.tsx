@@ -11,6 +11,7 @@ import FeaturedProperties from "@/components/FeaturedProperties";
 import About from "@/components/About";
 import Services from "@/components/Services";
 import Contact from "@/components/Contact";
+import CtaBanner from "@/components/CtaBanner";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
@@ -27,6 +28,7 @@ export default function Home() {
         <About />
         <Services />
         <Contact />
+        <CtaBanner />
       </main>
       <Footer />
       <WhatsAppButton />

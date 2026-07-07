@@ -43,6 +43,7 @@ export default function WhatsAppButton() {
           >
             <button
               onClick={() => setShowTooltip(false)}
+              aria-label="Fechar aviso"
               className="absolute -top-2 -right-2 w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
             >
               <X size={12} />

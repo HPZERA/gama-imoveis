@@ -136,18 +136,16 @@ body {
   opacity: 0.35 !important;
 }
 
-/* Testimonial swiper */
-.testimonial-swiper .swiper-pagination {
-  position: static;
-  margin-top: 32px;
-}
-
-.testimonial-swiper .swiper-pagination-bullet {
-  background: #ccc !important;
-}
-
-.testimonial-swiper .swiper-pagination-bullet-active {
-  background: #6BCAC4 !important;
+/* Visible focus ring for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 /* Animations */

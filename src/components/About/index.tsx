@@ -33,7 +33,7 @@ export default function About() {
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="sobre" className="py-20 bg-cream">
+    <section id="sobre" className="py-16 bg-cream">
       <div ref={ref} className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           {/* Left: Image */}
@@ -153,7 +153,7 @@ export default function About() {
             >
               <a
                 href="#contato"
-                className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95"
               >
                 Fale com um consultor
               </a>
