@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminAuth } from "@/lib/adminAuth";
 
 // Páginas e queries de imóveis ficam em cache por até 1h (page-level na home,
 // data-level via unstable_cache nas demais — ver src/lib/properties.ts); toda
@@ -17,6 +18,9 @@ function revalidatePublicPages() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   const body = await req.json();
   const supabase = await createClient();
   const { error } = await supabase.from("properties").insert(body);
@@ -26,6 +30,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   const { id, ...data } = await req.json();
   const supabase = await createClient();
   const { error } = await supabase.from("properties").update(data).eq("id", id);
@@ -35,6 +42,9 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   const { id } = await req.json();
   const supabase = await createClient();
   const { error } = await supabase.from("properties").delete().eq("id", id);

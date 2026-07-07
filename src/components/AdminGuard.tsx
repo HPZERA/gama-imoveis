@@ -1,26 +1,6 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
-
+// A autenticação real acontece no servidor (src/proxy.ts), que redireciona
+// requisições não autenticadas para /admin/login antes desta página
+// renderizar. Este componente não faz mais nenhuma verificação client-side.
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [checked, setChecked] = useState(false);
-
-  useEffect(() => {
-    if (pathname === "/admin/login") {
-      setChecked(true);
-      return;
-    }
-    const auth = localStorage.getItem("admin_auth");
-    if (!auth) {
-      router.replace("/admin/login");
-    } else {
-      setChecked(true);
-    }
-  }, [pathname, router]);
-
-  if (!checked) return null;
   return <>{children}</>;
 }

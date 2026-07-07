@@ -29,7 +29,6 @@ export default function AdminLogin() {
       const data = await res.json();
 
       if (data.ok) {
-        localStorage.setItem("admin_auth", "1");
         router.push("/admin/dashboard");
       } else {
         setError(data.error || "Erro ao entrar");

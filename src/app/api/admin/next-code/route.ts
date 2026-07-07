@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminAuth } from "@/lib/adminAuth";
 
 const CATEGORY_PREFIX: Record<string, string> = {
   "Casa":           "CA",
@@ -9,6 +10,9 @@ const CATEGORY_PREFIX: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category") ?? "";
   const prefix = CATEGORY_PREFIX[category];

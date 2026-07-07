@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminAuth } from "@/lib/adminAuth";
 
 export async function GET() {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   try {
     const supabase = await createClient();
 

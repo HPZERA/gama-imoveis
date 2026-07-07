@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Building2, LayoutDashboard, Home, Users, UserCog, LogOut, Menu, X, HardDrive, Settings } from "lucide-react";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 const nav = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -21,8 +20,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const [open, setOpen] = useState(false);
 
   async function handleLogout() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await fetch("/api/admin/logout", { method: "POST" });
     router.push("/admin/login");
   }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminAuth } from "@/lib/adminAuth";
 
 const DEFAULTS = {
   max_width: 1920,
@@ -11,6 +12,9 @@ const DEFAULTS = {
 };
 
 export async function GET() {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   try {
     const supabase = await createClient();
     const { data } = await supabase
@@ -25,6 +29,9 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
   try {
     const body = await req.json();
     const supabase = await createClient();

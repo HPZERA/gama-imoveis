@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { X, MessageCircle } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 
 const COOKIE_KEY = "gama_lead_popup";
 
@@ -20,6 +19,7 @@ type Props = {
 export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [company, setCompany] = useState(""); // honeypot
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -34,8 +34,11 @@ export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
     e.preventDefault();
     setSaving(true);
 
-    const supabase = createClient();
-    await supabase.from("leads").insert({ name, whatsapp, source: "cta" });
+    await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, whatsapp, company, source: "cta" }),
+    });
 
     setCookie(COOKIE_KEY, "submitted", 365);
     setSaving(false);
@@ -93,6 +96,16 @@ export default function LeadPopup({ isOpen, onClose, targetUrl }: Props) {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
+              <input
+                type="text"
+                name="company"
+                value={company}
+                onChange={e => setCompany(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute -left-[9999px] w-px h-px overflow-hidden"
+              />
               <div>
                 <input
                   required

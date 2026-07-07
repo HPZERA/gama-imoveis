@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import sharp from "sharp";
 import { applyWatermark, ORIGINALS_PREFIX } from "@/lib/imageWatermark";
+import { requireAdminAuth } from "@/lib/adminAuth";
+
+const ALLOWED_MIME_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
 
 async function getConfig(supabase: Awaited<ReturnType<typeof createClient>>) {
   try {
     const { data } = await supabase
       .from("image_config")
-      .select("max_width, quality")
+      .select("max_width, quality, max_file_size_mb")
       .eq("id", "default")
       .single();
     return data;
@@ -17,6 +20,10 @@ async function getConfig(supabase: Awaited<ReturnType<typeof createClient>>) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
 
@@ -24,11 +31,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Nenhum arquivo enviado" }, { status: 400 });
   }
 
+  if (!ALLOWED_MIME_TYPES.has(file.type)) {
+    return NextResponse.json(
+      { error: "Formato de arquivo não permitido. Envie JPEG, PNG, WebP ou AVIF." },
+      { status: 400 }
+    );
+  }
+
   const supabase = await createClient();
   const config = await getConfig(supabase);
 
   const outWidth = config?.max_width ?? 1920;
   const quality = config?.quality ?? 85;
+  const maxFileSizeBytes = (config?.max_file_size_mb ?? 10) * 1024 * 1024;
+
+  if (file.size > maxFileSizeBytes) {
+    return NextResponse.json(
+      { error: `Arquivo muito grande. Limite: ${config?.max_file_size_mb ?? 10}MB.` },
+      { status: 400 }
+    );
+  }
   const outHeight = Math.round(outWidth * 0.75); // 4:3
 
   const rawBuffer = Buffer.from(await file.arrayBuffer());
@@ -48,7 +70,10 @@ export async function POST(req: NextRequest) {
   try {
     finalBuffer = await applyWatermark(rawBuffer, outWidth, outHeight, quality);
   } catch {
-    finalBuffer = rawBuffer;
+    // Se o sharp não consegue processar o arquivo, ele não é uma imagem válida
+    // (apesar do Content-Type declarado) — nunca subir os bytes crus e não
+    // confiáveis para o Storage.
+    return NextResponse.json({ error: "Arquivo de imagem inválido ou corrompido" }, { status: 400 });
   }
 
   const optimizedSize = finalBuffer.length;

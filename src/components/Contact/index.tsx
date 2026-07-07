@@ -9,7 +9,6 @@ import {
   Send,
 } from "lucide-react";
 import { useLeadPopup } from "@/context/LeadPopupContext";
-import { createClient } from "@/lib/supabase/client";
 
 const contactInfo = [
   {
@@ -35,6 +34,7 @@ export default function Contact() {
     email: "",
     phone: "",
     message: "",
+    company: "", // honeypot — mantido vazio por usuários reais
   });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -45,25 +45,29 @@ export default function Contact() {
     setSending(true);
     setError(false);
 
-    const supabase = createClient();
-    const { error: insertError } = await supabase.from("leads").insert({
-      name: form.name,
-      whatsapp: form.phone,
-      email: form.email,
-      message: form.message,
-      source: "contact-form",
+    const res = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name,
+        whatsapp: form.phone,
+        email: form.email,
+        message: form.message,
+        company: form.company,
+        source: "contact-form",
+      }),
     });
 
     setSending(false);
 
-    if (insertError) {
+    if (!res.ok) {
       setError(true);
       return;
     }
 
     setSent(true);
     setTimeout(() => setSent(false), 4000);
-    setForm({ name: "", email: "", phone: "", message: "" });
+    setForm({ name: "", email: "", phone: "", message: "", company: "" });
   }
 
   return (
@@ -188,6 +192,16 @@ export default function Contact() {
               )}
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <input
+                  type="text"
+                  name="company"
+                  value={form.company}
+                  onChange={(e) => setForm({ ...form, company: e.target.value })}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] w-px h-px overflow-hidden"
+                />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-white/70 uppercase tracking-wider mb-1.5">

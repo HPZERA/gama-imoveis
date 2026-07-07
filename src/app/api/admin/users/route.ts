@@ -1,7 +1,6 @@
-import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/adminAuth";
 
 function adminSupabase() {
   return createClient(
@@ -11,25 +10,10 @@ function adminSupabase() {
   );
 }
 
-async function requireAuth() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll() {},
-      },
-    }
-  );
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
-}
-
 export async function GET() {
-  const user = await requireAuth();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const admin = adminSupabase();
   const { data, error } = await admin.auth.admin.listUsers();
@@ -44,8 +28,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const user = await requireAuth();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { email, password } = await request.json();
   if (!email || !password) {
@@ -64,16 +49,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const user = await requireAuth();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await requireAdminAuth())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "ID é obrigatório" }, { status: 400 });
-
-  if (id === user.id) {
-    return NextResponse.json({ error: "Não é possível excluir o próprio usuário." }, { status: 400 });
-  }
 
   const admin = adminSupabase();
   const { error } = await admin.auth.admin.deleteUser(id);
