@@ -23,11 +23,10 @@ const quickLinks = [
 
 const companyLinks = [
   { label: "Sobre a Gama", href: "/#sobre" },
-  { label: "Nossa Equipe", href: "/#sobre" },
   { label: "Serviços", href: "/#servicos" },
   {
-    label: "Trabalhe Conosco",
-    href: "https://wa.me/5555992103520?text=" + encodeURIComponent("Olá! Gostaria de saber sobre oportunidades para trabalhar na Gama Imóveis."),
+    label: "Anuncie seu imóvel",
+    href: "https://wa.me/5555992103520?text=" + encodeURIComponent("Quero anunciar meu imóvel"),
   },
 ];
 
