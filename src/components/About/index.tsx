@@ -56,14 +56,14 @@ export default function About() {
             </div>
 
             {/* Floating card */}
-            <div className="absolute -bottom-3 -right-3 sm:-bottom-5 sm:-right-5 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl max-w-[150px] sm:max-w-52">
-              <div className="flex items-center gap-2 sm:gap-3 mb-0 sm:mb-2">
-                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-brand/10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 size={14} className="text-brand sm:w-5 sm:h-5" />
+            <div className="absolute -bottom-2 -right-2 sm:-bottom-5 sm:-right-5 bg-white rounded-lg sm:rounded-2xl p-1.5 sm:p-5 shadow-xl max-w-[92px] sm:max-w-52">
+              <div className="flex items-center gap-1 sm:gap-3 mb-0 sm:mb-2">
+                <div className="w-5 h-5 sm:w-10 sm:h-10 bg-brand/10 rounded-md sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 size={10} className="text-brand sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-bold text-charcoal text-sm sm:text-lg leading-none">98%</p>
-                  <p className="text-[10px] sm:text-xs text-gray-text">de satisfação</p>
+                  <p className="font-bold text-charcoal text-[11px] sm:text-lg leading-none">98%</p>
+                  <p className="text-[7px] sm:text-xs text-gray-text leading-tight">de satisfação</p>
                 </div>
               </div>
               <p className="hidden sm:block text-xs text-gray-text leading-relaxed">
