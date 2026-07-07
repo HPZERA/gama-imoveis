@@ -9,6 +9,7 @@ import OtherProperties from "@/components/OtherProperties";
 import { BedDouble, Bath, Square, MapPin, ArrowLeft, MessageCircle, Car } from "lucide-react";
 import type { Metadata } from "next";
 import type { LucideIcon } from "lucide-react";
+import { SITE_URL } from "@/lib/site";
 
 function formatPrice(price: number | null, label: string | null, type: "venda" | "aluguel") {
   if (label) return label;
@@ -20,8 +21,6 @@ function formatPrice(price: number | null, label: string | null, type: "venda" |
   }).format(price);
   return type === "aluguel" ? `${formatted}/mês` : formatted;
 }
-
-const SITE_URL = "https://gama-imoveis-xi.vercel.app";
 
 export async function generateMetadata({
   params,
@@ -35,16 +34,24 @@ export async function generateMetadata({
 
   const description = data.description ?? `${data.title} em ${[data.neighborhood, data.city].filter(Boolean).join(", ")}`;
   const ogImage = (data.images as string[] | null)?.[0];
+  const url = `${SITE_URL}/imoveis/${id}`;
 
   return {
     title: `${data.title} | Gama Imóveis`,
     description,
+    alternates: { canonical: url },
     openGraph: {
       title: `${data.title} | Gama Imóveis`,
       description,
-      url: `${SITE_URL}/imoveis/${id}`,
+      url,
       siteName: "Gama Imóveis",
       ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: data.title }] } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${data.title} | Gama Imóveis`,
+      description,
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
   };
 }

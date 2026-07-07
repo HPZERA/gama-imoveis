@@ -1,12 +1,18 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useInView } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import { BedDouble, Bath, Square, Car, MapPin, ArrowRight } from "lucide-react";
+import { Pagination, Autoplay } from "swiper/modules";
+import { BedDouble, Bath, Square, Car, MapPin, ArrowRight, Heart } from "lucide-react";
 import type { DbProperty } from "@/types";
 import { withCacheBust } from "@/lib/imageUrl";
+import { useFavorites } from "@/hooks/useFavorites";
+import { getHighlightBadge } from "@/lib/badges";
+
+const MotionLink = motion(Link);
 
 function formatPrice(price: number | null, label: string | null, type: "venda" | "aluguel") {
   if (label) return label;
@@ -24,38 +30,62 @@ export default function PropertyCard({
   priority,
   showCategory,
   linkTipo,
+  animate = false,
+  delay = 0,
+  autoplay = false,
 }: {
   p: DbProperty;
   priority?: boolean;
   showCategory?: boolean;
   /** Preserves the active catalog filter (all|venda|aluguel) across navigation to the detail page. */
   linkTipo?: "all" | "venda" | "aluguel";
+  /** Fades the card in on scroll (used on the home page's featured grid). */
+  animate?: boolean;
+  delay?: number;
+  autoplay?: boolean;
 }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
   const imgs = p.images?.length ? p.images : [];
   const href = linkTipo ? `/imoveis/${p.id}?tipo=${linkTipo}` : `/imoveis/${p.id}`;
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(p.id);
+  const highlight = getHighlightBadge(p);
+
+  const Card = animate ? MotionLink : Link;
+  const motionProps = animate
+    ? {
+        initial: { opacity: 0, y: 30 },
+        animate: isInView ? { opacity: 1, y: 0 } : {},
+        transition: { duration: 0.55, delay },
+      }
+    : {};
 
   return (
-    <Link
+    <Card
+      ref={ref}
       href={href}
-      className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.07)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.14)] transition-all duration-300 group flex flex-col"
+      {...motionProps}
+      className="relative bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.07)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.16)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col"
     >
-      <div className="relative h-56 flex-shrink-0 bg-gray-100">
+      <div className="relative aspect-[4/3] flex-shrink-0 bg-gray-100 overflow-hidden">
         {imgs.length > 0 ? (
           <Swiper
-            modules={[Pagination]}
+            modules={autoplay ? [Pagination, Autoplay] : [Pagination]}
             pagination={{ clickable: true, dynamicBullets: true }}
             loop={imgs.length > 1}
+            autoplay={autoplay ? { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true } : undefined}
             touchStartPreventDefault={false}
             simulateTouch={false}
             className="property-swiper h-full md:pointer-events-none"
           >
             {imgs.map((img, i) => (
-              <SwiperSlide key={i} className="relative h-full">
+              <SwiperSlide key={i} className="relative h-full overflow-hidden">
                 <Image
                   src={withCacheBust(img)}
                   alt={`${p.title} - foto ${i + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   priority={priority && i === 0}
                   loading={priority && i === 0 ? undefined : "lazy"}
@@ -71,8 +101,13 @@ export default function PropertyCard({
           </div>
         )}
         <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5">
+          {highlight && (
+            <span className={`text-xs font-bold px-3 py-1.5 rounded-full shadow-md w-fit ${highlight.className}`}>
+              {highlight.label}
+            </span>
+          )}
           <span
-            className={`text-xs font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm ${
+            className={`text-xs font-bold px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm w-fit ${
               p.type === "venda"
                 ? "bg-charcoal/90 text-white"
                 : "bg-brand text-charcoal"
@@ -81,11 +116,36 @@ export default function PropertyCard({
             {p.type === "venda" ? "Venda" : "Aluguel"}
           </span>
           {showCategory && p.category && (
-            <span className="text-xs font-semibold px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm bg-white/90 text-charcoal">
+            <span className="text-xs font-semibold px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm bg-white/90 text-charcoal w-fit">
               {p.category}
             </span>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(p.id);
+          }}
+          aria-label={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+          aria-pressed={favorite}
+          className="absolute top-3 right-3 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:scale-110 active:scale-90 transition-transform duration-200"
+        >
+          <motion.span
+            key={String(favorite)}
+            initial={{ scale: 0.5 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            className="flex"
+          >
+            <Heart
+              size={17}
+              className={favorite ? "fill-rose-500 text-rose-500" : "text-charcoal-mid"}
+            />
+          </motion.span>
+        </button>
       </div>
 
       <div className="p-5 flex flex-col flex-1">
@@ -139,6 +199,6 @@ export default function PropertyCard({
           </div>
         </div>
       </div>
-    </Link>
+    </Card>
   );
 }

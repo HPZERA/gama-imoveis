@@ -40,7 +40,7 @@ const links = [
     icon: MapPin,
     label: "Nossa Localização",
     description: "São Gabriel — RS",
-    href: "#",
+    href: "https://www.google.com/maps/search/?api=1&query=S%C3%A3o+Gabriel%2C+RS",
     featured: false,
   },
 ];

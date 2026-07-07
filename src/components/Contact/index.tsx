@@ -24,12 +24,6 @@ const contactInfo = [
     value: "contato@gamaimoveis.com.br",
     href: "mailto:contato@gamaimoveis.com.br",
   },
-  {
-    icon: <MapPin size={20} className="text-brand" />,
-    label: "Endereço",
-    value: "xxx – xxx",
-    href: "#",
-  },
 ];
 
 export default function Contact() {
@@ -152,18 +146,17 @@ export default function Contact() {
               </button>
             </div>
 
-            {/* Map */}
-            <div className="rounded-2xl overflow-hidden h-52 shadow-sm">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.054693266285!2d-46.6548456846!3d-23.563173984659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0x63b9f09d98b4abdb!2sAv.%20Paulista%2C%20S%C3%A3o%20Paulo!5e0!3m2!1spt-BR!2sbr!4v1680000000000"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Localização Gama Imóveis"
-              />
+            {/* Service area */}
+            <div className="rounded-2xl overflow-hidden shadow-sm bg-charcoal-light border border-white/5 p-7 flex flex-col items-start gap-3">
+              <div className="w-11 h-11 bg-brand/10 rounded-xl flex items-center justify-center">
+                <MapPin size={20} className="text-brand" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-1">
+                  Área de atendimento
+                </p>
+                <p className="text-white font-medium">São Gabriel e região – RS</p>
+              </div>
             </div>
           </motion.div>
 
@@ -262,7 +255,7 @@ export default function Contact() {
 
                 <p className="text-center text-white/40 text-xs">
                   Ao enviar, você concorda com nossa{" "}
-                  <a href="#" className="text-brand underline">
+                  <a href="/politica-de-privacidade" className="text-brand underline">
                     política de privacidade
                   </a>
                   .

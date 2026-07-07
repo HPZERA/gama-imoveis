@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
@@ -49,10 +50,12 @@ export default function Header() {
       <div className="flex items-center justify-between px-6 lg:px-10 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/LOGO.png"
             alt="Gama Imóveis"
+            width={44}
+            height={44}
+            priority
             className="h-11 w-auto object-contain"
           />
           <div>
@@ -89,8 +92,9 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => openPopup(WA_URL)}
-            className="hidden xl:flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 shadow-sm hover:shadow-md"
+            className="hidden xl:flex items-center gap-2 bg-brand hover:bg-brand-hover text-charcoal font-semibold px-5 py-2.5 rounded-full text-sm transition-all duration-200 shadow-sm hover:shadow-md hover:scale-[1.03] active:scale-95"
           >
+            <MessageCircle size={16} strokeWidth={2.5} />
             Fale Conosco
           </button>
           <button

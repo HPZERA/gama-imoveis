@@ -11,7 +11,7 @@ export default function Loading() {
         </div>
         <div className="max-w-7xl mx-auto px-6 py-8 lg:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 lg:gap-12 items-start animate-pulse">
-            <div className="h-[420px] bg-gray-200 rounded-2xl" />
+            <div className="aspect-[4/3] md:aspect-auto md:h-[480px] bg-gray-200 rounded-2xl" />
             <div className="bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.08)] p-6 sm:p-7 space-y-4">
               <div className="h-5 w-24 bg-gray-100 rounded-full" />
               <div className="h-10 w-40 bg-gray-200 rounded" />

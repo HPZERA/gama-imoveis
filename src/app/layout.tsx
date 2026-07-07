@@ -9,6 +9,7 @@ import "swiper/css/free-mode";
 import "swiper/css/zoom";
 import "swiper/css/keyboard";
 import ClientProviders from "@/components/ClientProviders";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,19 +23,48 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const TITLE = "Gama Imóveis | Imobiliária em São Gabriel e Região, RS";
+const DESCRIPTION =
+  "Há mais de 4 anos conectando pessoas aos melhores imóveis de São Gabriel e região (RS). Especialistas em compra, venda e locação de imóveis residenciais e comerciais.";
+
 export const metadata: Metadata = {
-  title: "Gama Imóveis | Imobiliária Premium em São Paulo",
-  description:
-    "Há mais de 15 anos conectando pessoas aos melhores imóveis da região. Especialistas em compra, venda e locação de imóveis residenciais e comerciais de alto padrão.",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
   keywords:
-    "imóveis, imobiliária, comprar imóvel, alugar imóvel, São Paulo, apartamento, casa, terreno, alto padrão",
-  authors: [{ name: "Gama Imóveis" }],
+    "imóveis, imobiliária, comprar imóvel, alugar imóvel, São Gabriel, Rio Grande do Sul, apartamento, casa, terreno",
+  authors: [{ name: SITE_NAME }],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Gama Imóveis | Imobiliária Premium",
-    description: "Especialistas em imóveis de alto padrão há mais de 15 anos.",
+    title: TITLE,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     type: "website",
     locale: "pt_BR",
+    images: [{ url: "/LOGO.png", width: 1254, height: 1254, alt: SITE_NAME }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/LOGO.png"],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  name: SITE_NAME,
+  url: SITE_URL,
+  image: `${SITE_URL}/LOGO.png`,
+  telephone: "+5555992103520",
+  email: "contato@gamaimoveis.com.br",
+  areaServed: "São Gabriel e região, RS",
+  sameAs: [
+    "https://www.instagram.com/gamaimoveissg/",
+    "https://www.facebook.com/gamaimoveissg",
+  ],
 };
 
 export default function RootLayout({
@@ -45,6 +75,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
       <body className="antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

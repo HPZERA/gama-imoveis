@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Phone, Mail, MapPin } from "lucide-react";
+import { Home, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
 
 const IconInstagram = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -13,38 +13,27 @@ const IconFacebook = () => (
   </svg>
 );
 
-const IconLinkedin = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-  </svg>
-);
-
-const IconYoutube = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-    <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
-  </svg>
-);
-
 const quickLinks = [
-  { label: "Imóveis à Venda", href: "#imoveis" },
-  { label: "Imóveis para Alugar", href: "#imoveis" },
-  { label: "Lançamentos", href: "#imoveis" },
-  { label: "Busca Avançada", href: "#imoveis" },
-  { label: "Favoritos", href: "#" },
+  { label: "Imóveis à Venda", href: "/imoveis?tipo=venda" },
+  { label: "Imóveis para Alugar", href: "/imoveis?tipo=aluguel" },
+  { label: "Lançamentos", href: "/imoveis" },
+  { label: "Busca Avançada", href: "/imoveis" },
+  { label: "Favoritos", href: "/favoritos" },
 ];
 
 const companyLinks = [
-  { label: "Sobre a Gama", href: "#sobre" },
-  { label: "Nossa Equipe", href: "#sobre" },
-  { label: "Serviços", href: "#servicos" },
-  { label: "Trabalhe Conosco", href: "#" },
+  { label: "Sobre a Gama", href: "/#sobre" },
+  { label: "Nossa Equipe", href: "/#sobre" },
+  { label: "Serviços", href: "/#servicos" },
+  {
+    label: "Trabalhe Conosco",
+    href: "https://wa.me/5555992103520?text=" + encodeURIComponent("Olá! Gostaria de saber sobre oportunidades para trabalhar na Gama Imóveis."),
+  },
 ];
 
 const socialLinks = [
-  { icon: <IconInstagram />, href: "#", label: "Instagram" },
-  { icon: <IconFacebook />, href: "#", label: "Facebook" },
-  { icon: <IconLinkedin />, href: "#", label: "LinkedIn" },
-  { icon: <IconYoutube />, href: "#", label: "YouTube" },
+  { icon: <IconInstagram />, href: "https://www.instagram.com/gamaimoveissg/", label: "Instagram" },
+  { icon: <IconFacebook />, href: "https://www.facebook.com/gamaimoveissg", label: "Facebook" },
 ];
 
 export default function Footer() {
@@ -76,6 +65,8 @@ export default function Footer() {
                 <a
                   key={s.label}
                   href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={s.label}
                   className="w-9 h-9 bg-white/5 hover:bg-brand hover:text-charcoal rounded-xl flex items-center justify-center transition-all duration-200"
                 >
@@ -93,12 +84,12 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-sm hover:text-brand hover:pl-1 transition-all duration-200"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -110,16 +101,30 @@ export default function Footer() {
               A Empresa
             </h4>
             <ul className="space-y-2.5">
-              {companyLinks.map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm hover:text-brand hover:pl-1 transition-all duration-200"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
+              {companyLinks.map((link) => {
+                const external = link.href.startsWith("http");
+                return (
+                  <li key={link.label}>
+                    {external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm hover:text-brand hover:pl-1 transition-all duration-200"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className="text-sm hover:text-brand hover:pl-1 transition-all duration-200"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -130,8 +135,15 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3.5">
               <li className="flex items-start gap-2.5">
-                <Phone size={15} className="text-brand mt-0.5 flex-shrink-0" />
-                <span className="text-sm">xxxx</span>
+                <MessageCircle size={15} className="text-brand mt-0.5 flex-shrink-0" />
+                <a
+                  href="https://wa.me/5555992103520"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm hover:text-brand transition-colors"
+                >
+                  (55) 99210-3520
+                </a>
               </li>
               <li className="flex items-start gap-2.5">
                 <Mail size={15} className="text-brand mt-0.5 flex-shrink-0" />
@@ -144,16 +156,13 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2.5">
                 <MapPin size={15} className="text-brand mt-0.5 flex-shrink-0" />
-                <span className="text-sm">xxxx – xxx</span>
+                <span className="text-sm">São Gabriel e região – RS</span>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <Clock size={15} className="text-brand mt-0.5 flex-shrink-0" />
+                <span className="text-sm">Atendimento via WhatsApp todos os dias</span>
               </li>
             </ul>
-
-            {/* CRECI */}
-            <div className="mt-5 inline-block bg-white/5 border border-white/10 rounded-lg px-3 py-2">
-              <p className="text-xs text-white/40">
-                CRECI-SP: <span className="text-white/70 font-medium">xxxx</span>
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -163,15 +172,15 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
           <p>© {new Date().getFullYear()} Gama Imóveis. Todos os direitos reservados.</p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-brand transition-colors">
+            <Link href="/politica-de-privacidade" className="hover:text-brand transition-colors">
               Política de Privacidade
-            </a>
-            <a href="#" className="hover:text-brand transition-colors">
+            </Link>
+            <Link href="/termos-de-uso" className="hover:text-brand transition-colors">
               Termos de Uso
-            </a>
-            <a href="#" className="hover:text-brand transition-colors">
+            </Link>
+            <Link href="/cookies" className="hover:text-brand transition-colors">
               Cookies
-            </a>
+            </Link>
           </div>
         </div>
       </div>

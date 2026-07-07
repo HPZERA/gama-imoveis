@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { useInView, motion } from "framer-motion";
-import { CheckCircle2, Users, TrendingUp, Shield } from "lucide-react";
+import { CheckCircle2, Users, TrendingUp, Shield, Lock } from "lucide-react";
 
 const highlights = [
   {
@@ -12,7 +12,7 @@ const highlights = [
     description: "Processos claros e documentação completa em cada etapa",
   },
   {
-    icon: <Shield size={18} className="text-brand" />,
+    icon: <Lock size={18} className="text-brand" />,
     title: "Segurança Jurídica",
     description: "Equipe especializada para garantir transações seguras",
   },
