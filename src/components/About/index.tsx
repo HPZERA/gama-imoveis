@@ -56,17 +56,17 @@ export default function About() {
             </div>
 
             {/* Floating card */}
-            <div className="absolute -bottom-5 -right-5 bg-white rounded-2xl p-5 shadow-xl max-w-52">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center">
-                  <CheckCircle2 size={20} className="text-brand" />
+            <div className="absolute -bottom-3 -right-3 sm:-bottom-5 sm:-right-5 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl max-w-[150px] sm:max-w-52">
+              <div className="flex items-center gap-2 sm:gap-3 mb-0 sm:mb-2">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 bg-brand/10 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 size={14} className="text-brand sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <p className="font-bold text-charcoal text-lg leading-none">98%</p>
-                  <p className="text-xs text-gray-text">de satisfação</p>
+                  <p className="font-bold text-charcoal text-sm sm:text-lg leading-none">98%</p>
+                  <p className="text-[10px] sm:text-xs text-gray-text">de satisfação</p>
                 </div>
               </div>
-              <p className="text-xs text-gray-text leading-relaxed">
+              <p className="hidden sm:block text-xs text-gray-text leading-relaxed">
                 dos nossos clientes recomendam a Gama Imóveis
               </p>
             </div>
