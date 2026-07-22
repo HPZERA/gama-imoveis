@@ -1,31 +1,3 @@
-export interface Property {
-  id: string;
-  title: string;
-  price: number;
-  priceType: "sale" | "rent";
-  type: "house" | "apartment" | "commercial" | "land";
-  city: string;
-  neighborhood: string;
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  parkingSpots: number;
-  images: string[];
-  badge?: string;
-  featured?: boolean;
-  description?: string;
-}
-
-export interface Testimonial {
-  id: string;
-  name: string;
-  photo: string;
-  rating: number;
-  comment: string;
-  role?: string;
-  date?: string;
-}
-
 export interface Category {
   id: string;
   name: string;

@@ -15,3 +15,7 @@ export function withCacheBust(url: string): string {
   const separator = url.includes("?") ? "&" : "?";
   return `${url}${separator}v=${CACHE_BUST_VERSION}`;
 }
+
+// Tiny 8x6 solid-color webp used as a blur-up placeholder while photos load.
+export const BLUR_DATA_URL =
+  "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADQAQCdASoIAAUAAUAmJYgCdAEO/gHOAAA=";

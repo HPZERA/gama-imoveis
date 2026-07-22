@@ -51,7 +51,6 @@ export default function FeaturedClient({ properties }: { properties: DbProperty[
               p={property}
               showCategory
               animate
-              autoplay
               delay={i * 0.08}
               priority={i < 3}
             />

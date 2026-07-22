@@ -2,16 +2,23 @@ import type { NextConfig } from "next";
 
 const SUPABASE_ORIGIN = "https://hpqmzsqtzrpzanqtkcbf.supabase.co";
 
+// Hosts do Google Analytics (GA4) e Meta Pixel — só chamados quando as
+// respectivas env vars (NEXT_PUBLIC_GA_MEASUREMENT_ID / NEXT_PUBLIC_META_PIXEL_ID)
+// estiverem configuradas, mas o CSP precisa liberar os hosts de antemão.
+const ANALYTICS_SCRIPT_HOSTS = "https://www.googletagmanager.com https://connect.facebook.net";
+const ANALYTICS_CONNECT_HOSTS = "https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com";
+const ANALYTICS_IMG_HOSTS = "https://www.facebook.com https://www.google-analytics.com";
+
 const CSP = [
   "default-src 'self'",
   // 'unsafe-inline' no script-src: o layout injeta um <script type="application/ld+json">
   // estático (dados da empresa, sem input de usuário) e o Next injeta scripts inline de
   // hidratação. Sem isso a página não renderiza. Ainda bloqueia scripts de outras origens.
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline' ${ANALYTICS_SCRIPT_HOSTS}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: https://images.unsplash.com https://plus.unsplash.com https://randomuser.me https://ui-avatars.com https://www.gamaimoveissg.com.br ${SUPABASE_ORIGIN}`,
+  `img-src 'self' data: https://images.unsplash.com https://plus.unsplash.com https://randomuser.me https://ui-avatars.com https://www.gamaimoveissg.com.br ${SUPABASE_ORIGIN} ${ANALYTICS_IMG_HOSTS}`,
   "font-src 'self' data:",
-  `connect-src 'self' ${SUPABASE_ORIGIN}`,
+  `connect-src 'self' ${SUPABASE_ORIGIN} ${ANALYTICS_CONNECT_HOSTS}`,
   `media-src 'self' ${SUPABASE_ORIGIN}`,
   "frame-ancestors 'none'",
   "object-src 'none'",

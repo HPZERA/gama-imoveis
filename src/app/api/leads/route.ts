@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isRateLimited, clientIp } from "@/lib/rateLimit";
+import { notifyNewLead } from "@/lib/notifications";
 
 const MAX_LEN = {
   name: 120,
@@ -45,19 +47,24 @@ export async function POST(req: NextRequest) {
   }
   const source = isNonEmptyString(body.source, MAX_LEN.source) ? body.source : "site";
 
-  const supabase = await createClient();
-  const { error } = await supabase.from("leads").insert({
+  const lead = {
     name: (body.name as string).trim(),
     whatsapp: (body.whatsapp as string).trim(),
     email: (body.email as string | undefined)?.trim() || null,
     message: (body.message as string | undefined)?.trim() || null,
     source,
-  });
+  };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("leads").insert(lead);
 
   if (error) {
     console.error("Erro ao salvar lead:", error.message);
     return NextResponse.json({ error: "Não foi possível enviar sua mensagem" }, { status: 500 });
   }
+
+  // Roda depois da resposta ser enviada ao usuário, sem atrasar o formulário.
+  after(() => notifyNewLead(lead));
 
   return NextResponse.json({ ok: true });
 }

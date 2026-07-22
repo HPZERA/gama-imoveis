@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { Navigation, Thumbs, Keyboard, FreeMode, Zoom, A11y } from "swiper/modules";
 import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react";
-import { withCacheBust } from "@/lib/imageUrl";
+import { withCacheBust, BLUR_DATA_URL } from "@/lib/imageUrl";
+
+// Main gallery column caps at 784px wide once the 400px sticky info panel and
+// max-w-7xl container kick in at the lg breakpoint — see the grid in page.tsx.
+const MAIN_SIZES = "(max-width: 1023px) 100vw, 784px";
+const THUMB_SIZES = "76px";
 
 export default function PropertyGallery({
   images,
@@ -19,6 +25,21 @@ export default function PropertyGallery({
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const mainSwiperRef = useRef<SwiperType | null>(null);
+
+  // Photos actually fetched so far: the first photo, plus one more every time
+  // the visitor lands on a new slide, so only the next photo is ever
+  // preloaded ahead of time — the rest load on demand as they navigate.
+  const [loaded, setLoaded] = useState<Set<number>>(() => new Set([0, 1]));
+
+  const markVisible = useCallback((index: number) => {
+    setLoaded((prev) => {
+      if (prev.has(index) && (index + 1 >= images.length || prev.has(index + 1))) return prev;
+      const next = new Set(prev);
+      next.add(index);
+      if (index + 1 < images.length) next.add(index + 1);
+      return next;
+    });
+  }, [images.length]);
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -43,6 +64,7 @@ export default function PropertyGallery({
   }
 
   const openLightbox = (index: number) => {
+    markVisible(index);
     setActiveIndex(index);
     setLightboxOpen(true);
   };
@@ -57,7 +79,10 @@ export default function PropertyGallery({
           thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
           navigation={images.length > 1 ? { nextEl: ".gallery-next", prevEl: ".gallery-prev" } : false}
           keyboard={{ enabled: true }}
-          onSlideChange={(s) => setActiveIndex(s.activeIndex)}
+          onSlideChange={(s) => {
+            setActiveIndex(s.activeIndex);
+            markVisible(s.activeIndex);
+          }}
           className="property-detail-swiper"
         >
           {images.map((img, i) => (
@@ -65,17 +90,22 @@ export default function PropertyGallery({
               <button
                 type="button"
                 onClick={() => openLightbox(i)}
-                className="block w-full aspect-[4/3] md:aspect-auto md:h-[480px] bg-gray-100 cursor-zoom-in"
+                className="relative block w-full aspect-[4/3] md:aspect-auto md:h-[480px] bg-gray-100 cursor-zoom-in"
                 aria-label="Ampliar imagem"
               >
-                <img
-                  src={withCacheBust(img)}
-                  alt={`${title} - foto ${i + 1}`}
-                  loading={Math.abs(i - activeIndex) <= 1 ? "eager" : "lazy"}
-                  decoding="async"
-                  className="w-full h-full object-contain md:object-cover"
-                  draggable={false}
-                />
+                {loaded.has(i) && (
+                  <Image
+                    src={withCacheBust(img)}
+                    alt={`${title} - foto ${i + 1}`}
+                    fill
+                    sizes={MAIN_SIZES}
+                    className="object-contain md:object-cover"
+                    draggable={false}
+                    preload={i === 0}
+                    placeholder="blur"
+                    blurDataURL={BLUR_DATA_URL}
+                  />
+                )}
               </button>
             </SwiperSlide>
           ))}
@@ -114,7 +144,7 @@ export default function PropertyGallery({
         </button>
       </div>
 
-      {/* Thumbnails */}
+      {/* Thumbnails — real small renditions via Next/Image, not the full photo scaled by CSS */}
       {images.length > 1 && (
         <Swiper
           modules={[Thumbs, FreeMode]}
@@ -130,18 +160,20 @@ export default function PropertyGallery({
               <button
                 type="button"
                 onClick={() => mainSwiperRef.current?.slideTo(i)}
-                className={`block w-full h-20 overflow-hidden rounded-xl border-2 transition-colors cursor-pointer ${
+                className={`relative block w-full h-20 overflow-hidden rounded-xl border-2 transition-colors cursor-pointer ${
                   activeIndex === i ? "border-brand" : "border-transparent"
                 }`}
                 aria-label={`Ver foto ${i + 1}`}
               >
-                <img
+                <Image
                   src={withCacheBust(img)}
                   alt={`${title} miniatura ${i + 1}`}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes={THUMB_SIZES}
+                  className="object-cover"
                   draggable={false}
+                  placeholder="blur"
+                  blurDataURL={BLUR_DATA_URL}
                 />
               </button>
             </SwiperSlide>
@@ -179,20 +211,24 @@ export default function PropertyGallery({
                 zoom={{ maxRatio: 3 }}
                 navigation={images.length > 1 ? { nextEl: ".lightbox-next", prevEl: ".lightbox-prev" } : false}
                 keyboard={{ enabled: true }}
-                onSlideChange={(s) => setActiveIndex(s.activeIndex)}
+                onSlideChange={(s) => {
+                  setActiveIndex(s.activeIndex);
+                  markVisible(s.activeIndex);
+                }}
                 className="w-full h-full lightbox-swiper"
               >
                 {images.map((img, i) => (
                   <SwiperSlide key={i} className="flex items-center justify-center">
                     <div className="swiper-zoom-container">
-                      <img
-                        src={withCacheBust(img)}
-                        alt={`${title} - foto ${i + 1}`}
-                        loading={Math.abs(i - activeIndex) <= 1 ? "eager" : "lazy"}
-                        decoding="async"
-                        className="max-w-full max-h-full object-contain select-none"
-                        draggable={false}
-                      />
+                      {loaded.has(i) && (
+                        <img
+                          src={withCacheBust(img)}
+                          alt={`${title} - foto ${i + 1}`}
+                          decoding="async"
+                          className="max-w-full max-h-full object-contain select-none"
+                          draggable={false}
+                        />
+                      )}
                     </div>
                   </SwiperSlide>
                 ))}

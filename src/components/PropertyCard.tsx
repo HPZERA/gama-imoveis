@@ -4,11 +4,9 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
 import { BedDouble, Bath, Square, Car, MapPin, ArrowRight, Heart } from "lucide-react";
 import type { DbProperty } from "@/types";
-import { withCacheBust } from "@/lib/imageUrl";
+import { withCacheBust, BLUR_DATA_URL } from "@/lib/imageUrl";
 import { useFavorites } from "@/hooks/useFavorites";
 import { getHighlightBadge } from "@/lib/badges";
 
@@ -32,7 +30,6 @@ export default function PropertyCard({
   linkTipo,
   animate = false,
   delay = 0,
-  autoplay = false,
 }: {
   p: DbProperty;
   priority?: boolean;
@@ -42,11 +39,10 @@ export default function PropertyCard({
   /** Fades the card in on scroll (used on the home page's featured grid). */
   animate?: boolean;
   delay?: number;
-  autoplay?: boolean;
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
-  const imgs = p.images?.length ? p.images : [];
+  const mainImage = p.images?.length ? p.images[0] : null;
   const href = linkTipo ? `/imoveis/${p.id}?tipo=${linkTipo}` : `/imoveis/${p.id}`;
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorite = isFavorite(p.id);
@@ -69,32 +65,17 @@ export default function PropertyCard({
       className="relative bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(0,0,0,0.07)] hover:shadow-[0_16px_48px_rgba(0,0,0,0.16)] hover:-translate-y-1.5 transition-all duration-300 group flex flex-col"
     >
       <div className="relative aspect-[4/3] flex-shrink-0 bg-gray-100 overflow-hidden">
-        {imgs.length > 0 ? (
-          <Swiper
-            modules={autoplay ? [Pagination, Autoplay] : [Pagination]}
-            pagination={{ clickable: true, dynamicBullets: true }}
-            loop={imgs.length > 1}
-            autoplay={autoplay ? { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true } : undefined}
-            touchStartPreventDefault={false}
-            simulateTouch={false}
-            className="property-swiper h-full md:pointer-events-none"
-          >
-            {imgs.map((img, i) => (
-              <SwiperSlide key={i} className="relative h-full overflow-hidden">
-                <Image
-                  src={withCacheBust(img)}
-                  alt={`${p.title} - foto ${i + 1}`}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={priority && i === 0}
-                  loading={priority && i === 0 ? undefined : "lazy"}
-                  placeholder="blur"
-                  blurDataURL="data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADQAQCdASoIAAUAAUAmJYgCdAEO/gHOAAA="
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        {mainImage ? (
+          <Image
+            src={withCacheBust(mainImage)}
+            alt={p.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            preload={priority}
+            placeholder="blur"
+            blurDataURL={BLUR_DATA_URL}
+          />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-gray-300 text-sm">Sem foto</span>

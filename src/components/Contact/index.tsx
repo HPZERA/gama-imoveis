@@ -10,6 +10,7 @@ import {
   Send,
 } from "lucide-react";
 import { useLeadPopup } from "@/context/LeadPopupContext";
+import { CRECI } from "@/lib/site";
 
 const OFFICE_ADDRESS = "Rua Coronel Soares, 898 - Centro, São Gabriel - RS";
 const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(OFFICE_ADDRESS)}`;
@@ -161,14 +162,14 @@ export default function Contact() {
               rel="noopener noreferrer"
               className="group block rounded-2xl overflow-hidden shadow-sm bg-charcoal-light border border-white/5 cursor-pointer"
             >
-              <div className="relative w-full h-[200px] overflow-hidden">
+              <div className="relative w-full aspect-[4/3] overflow-hidden bg-charcoal">
                 <Image
                   src="/LOCALIZAÇÃO.png"
                   alt="Fachada da Gama Imóveis"
                   fill
                   quality={100}
                   sizes="(max-width: 1024px) 100vw, 40vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                  className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                 />
               </div>
               <div className="p-7 flex flex-col items-start gap-3">
@@ -184,6 +185,7 @@ export default function Contact() {
                     <br />
                     Centro, São Gabriel - RS
                   </p>
+                  <p className="text-white/40 text-xs mt-1.5">CRECI {CRECI}</p>
                 </div>
               </div>
             </a>

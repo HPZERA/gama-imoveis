@@ -5,3 +5,4 @@ export const CONTACT_EMAIL = "contato@gamaimoveis.com.br";
 export const INSTAGRAM_URL = "https://www.instagram.com/gamaimoveissg/";
 export const FACEBOOK_URL = "https://www.facebook.com/gamaimoveissg";
 export const SERVICE_AREA = "São Gabriel e região, RS";
+export const CRECI = "84265F";

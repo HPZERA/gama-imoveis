@@ -9,6 +9,7 @@ import "swiper/css/free-mode";
 import "swiper/css/zoom";
 import "swiper/css/keyboard";
 import ClientProviders from "@/components/ClientProviders";
+import Analytics from "@/components/Analytics";
 import { SITE_URL, SITE_NAME } from "@/lib/site";
 
 const inter = Inter({
@@ -42,13 +43,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     type: "website",
     locale: "pt_BR",
-    images: [{ url: "/LOGO.png", width: 1254, height: 1254, alt: SITE_NAME }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/LOGO.png"],
+    images: ["/og-image.jpg"],
   },
 };
 
@@ -79,6 +80,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <Analytics />
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>

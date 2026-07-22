@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Home, MessageCircle, Mail, MapPin, Clock } from "lucide-react";
+import { CRECI } from "@/lib/site";
 
 const IconInstagram = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -169,7 +170,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/5 py-5">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
-          <p>© {new Date().getFullYear()} Gama Imóveis. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Gama Imóveis. Todos os direitos reservados. CRECI {CRECI}</p>
           <div className="flex gap-4">
             <Link href="/politica-de-privacidade" className="hover:text-brand transition-colors">
               Política de Privacidade

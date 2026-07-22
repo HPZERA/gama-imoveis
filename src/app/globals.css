@@ -60,29 +60,6 @@ body {
   font-weight: 700;
 }
 
-/* Property card swiper */
-.property-swiper .swiper-pagination {
-  bottom: 8px;
-}
-
-.property-swiper .swiper-button-next,
-.property-swiper .swiper-button-prev {
-  width: 30px !important;
-  height: 30px !important;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.property-swiper:hover .swiper-button-next,
-.property-swiper:hover .swiper-button-prev {
-  opacity: 1;
-}
-
-.property-swiper .swiper-button-next::after,
-.property-swiper .swiper-button-prev::after {
-  font-size: 11px !important;
-}
-
 /* Property detail gallery */
 .property-detail-swiper {
   width: 100%;
