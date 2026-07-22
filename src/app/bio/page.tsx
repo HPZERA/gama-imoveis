@@ -69,7 +69,10 @@ export default function BioPage() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover object-center"
         >
-          <source src="/Brazilian_house_facade_golden_hour_202605312154.mp4" type="video/mp4" />
+          <source
+            src="https://hpqmzsqtzrpzanqtkcbf.supabase.co/storage/v1/object/public/imoveis/site/bio-background.mp4"
+            type="video/mp4"
+          />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
         <div className="absolute bottom-0 right-0 w-56 h-16 bg-gradient-to-tl from-black to-transparent" />
