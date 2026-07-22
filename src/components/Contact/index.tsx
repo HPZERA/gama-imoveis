@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useInView, motion } from "framer-motion";
+import Image from "next/image";
 import {
   Mail,
   MapPin,
@@ -9,6 +10,9 @@ import {
   Send,
 } from "lucide-react";
 import { useLeadPopup } from "@/context/LeadPopupContext";
+
+const OFFICE_ADDRESS = "Rua Coronel Soares, 898 - Centro, São Gabriel - RS";
+const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(OFFICE_ADDRESS)}`;
 
 const contactInfo = [
   {
@@ -151,17 +155,38 @@ export default function Contact() {
             </div>
 
             {/* Service area */}
-            <div className="rounded-2xl overflow-hidden shadow-sm bg-charcoal-light border border-white/5 p-7 flex flex-col items-start gap-3">
-              <div className="w-11 h-11 bg-brand/10 rounded-xl flex items-center justify-center">
-                <MapPin size={20} className="text-brand" />
+            <a
+              href={GOOGLE_MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block rounded-2xl overflow-hidden shadow-sm bg-charcoal-light border border-white/5 cursor-pointer"
+            >
+              <div className="relative w-full h-[200px] overflow-hidden">
+                <Image
+                  src="/LOCALIZAÇÃO.png"
+                  alt="Fachada da Gama Imóveis"
+                  fill
+                  quality={100}
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                />
               </div>
-              <div>
-                <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-1">
-                  Área de atendimento
-                </p>
-                <p className="text-white font-medium">São Gabriel e região – RS</p>
+              <div className="p-7 flex flex-col items-start gap-3">
+                <div className="w-11 h-11 bg-brand/10 rounded-xl flex items-center justify-center">
+                  <MapPin size={20} className="text-brand" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-1">
+                    Área de atendimento
+                  </p>
+                  <p className="text-white font-medium transition-colors group-hover:text-brand">
+                    Rua Coronel Soares, 898
+                    <br />
+                    Centro, São Gabriel - RS
+                  </p>
+                </div>
               </div>
-            </div>
+            </a>
           </motion.div>
 
           {/* Right: Form */}
